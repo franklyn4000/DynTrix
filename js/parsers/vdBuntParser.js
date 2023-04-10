@@ -41,6 +41,19 @@ async function readFile(file) {
   return f;
 }
 
+async function readTSVFile(file) {
+  let f;
+  await d3.tsv(file)
+    .then(function (data) {
+      f = data;
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+
+  return f;
+}
+
 class VanDeBunt {
 
   parse(mode, files)  {
