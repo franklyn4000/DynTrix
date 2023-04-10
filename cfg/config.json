@@ -1,0 +1,33 @@
+{
+  "node": {
+    "charge": -500,
+    "radiusS": 8,
+    "radiusM": 12,
+    "radiusL": 16,
+    "stroke": "#000",
+    "strokeHighlighted": "#efefef",
+    "strokeWidth": 1
+  },
+  "link": {
+    "strength": 0.4,
+    "distance": 32,
+    "bridgeStrength": 0.05,
+    "stroke": "#000",
+    "strokeWidth": 1
+  },
+  "matrix": {
+    "charge": -100,
+    "radiusFactor": 1.05,
+    "transitionDuration": 1000,
+    "transitionDelay": 20,
+    "cellSize": 16,
+    "cellColor": "#FFFFFF",
+    "cellColorLink": "#333",
+    "cellColorDiag": "#aeaeae",
+    "cellStroke": "#000000",
+    "cellStrokeWidth": 1,
+    "margin": 32,
+    "bridgeStroke": "#4a4a4a",
+    "bridgeStrokeWidth": 1
+  }
+}

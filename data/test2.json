@@ -1,0 +1,62 @@
+{
+  "timeslices": [
+    {
+      "tag": "Day 1",
+      "nodes": [
+        {"name":"test1","group":"group1"},
+        {"name":"test2","group":"group1"},
+        {"name":"test3","group":"group1"},
+        {"name":"test4","group":"group1"},
+        {"name":"test5","group":"group1"},
+        {"name":"test6","group":"group2"},
+        {"name":"test7","group":"group2"},
+        {"name":"test8","group":"group2"}
+      ],
+      "links":[
+        {"source":0,"target":1,"value":1},
+        {"source":0,"target":2,"value":1},
+        {"source":0,"target":3,"value":1},
+        {"source":0,"target":4,"value":1},
+        {"source":0,"target":5,"value":1},
+        {"source":2,"target":3,"value":1},
+        {"source":5,"target":6,"value":1},
+        {"source":1,"target":7,"value":1},
+        {"source":3,"target":6,"value":1},
+        {"source":6,"target":7,"value":1},
+        {"source":7,"target":5,"value":1}
+      ]
+    },
+    {
+      "tag": "Day 2",
+      "nodes": [
+        {"name":"test1","group":"group1"},
+        {"name":"test2","group":"group1"},
+        {"name":"test3","group":"group1"},
+        {"name":"test4","group":"group1"},
+        {"name":"test5","group":"group1"}
+      ],
+      "links":[
+        {"source":0,"target":1,"value":1},
+        {"source":0,"target":2,"value":1},
+        {"source":0,"target":3,"value":1},
+        {"source":0,"target":4,"value":1}
+      ]
+    },
+    {
+      "tag": "Day 3",
+      "nodes": [
+        {"name":"test1","group":"group1"},
+        {"name":"test2","group":"group1"},
+        {"name":"test3","group":"group1"},
+        {"name":"test4","group":"group1"},
+        {"name":"test5","group":"group1"}
+      ],
+      "links":[
+        {"source":0,"target":1,"value":1},
+        {"source":1,"target":2,"value":1},
+        {"source":2,"target":3,"value":1},
+        {"source":3,"target":4,"value":1}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dynamic Nodetrix</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+
+
+<div class="visualization">
+  <aside>
+    <div id="data-chooser-container">
+      <label for="files">Upload dataset</label>
+      <input name="files" id="files" class="form-control" type="file" accept="*.tgf"">
+      <label for="datasets">Predefined datasets:</label>
+      <select name="datasets" id="datasets">
+        <option value="none">none</option>
+        <optgroup label="Real-world data">
+          <option value="mooc">MOOC</option>
+          <option value="rugby">Rugby</option>
+          <option value="vdBunt">van de Bunt</option>
+          <option value="infoVis">InfoVis</option>
+          <!--<option value="infoVisPersistNodes">InfoVis persist nodes</option>-->
+          <option value="infoVisPersistNodesEdges">InfoVis persist nodes & edges</option>
+          <option value="ramp">Ramp</option>
+        </optgroup>
+        <optgroup label="generated data">
+          <option value="generated S">Chordal Cycle (20n)</option>
+          <option value="generated M">Duplication Divergence (120n)</option>
+          <option value="generated L">Barabasi-Albert (500n)</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="row group">
+
+      <div class="col radiogroups">
+        <label for="clustering">Clustering</label>
+        <form id="clustering" name="clustering">
+          <!-- clustering control -->
+        </form>
+      </div>
+
+      <div class="col radiogroups">
+        <label for="reordering">Reordering</label>
+        <form id="reordering" name="reordering">
+          <!-- reordering control -->
+        </form>
+      </div>
+    </div>
+    <div id="utility-button-container" class="">
+      <label for="">Tools</label>
+      <div id="toolbar" class="">
+        <button id="deleteButton">Delete All</button>
+        <button id="zoomButton">Zoom to fit</button>
+      </div>
+    </div>
+    <label id="clusterslabel" for="">Clusters</label>
+    <div id="colorscale" style="">
+      <div id="clusterslist" style=""></div>
+      <div id="nodeslist" style=""></div>
+    </div>
+  </aside>
+  <main>
+    <div id="selectiontools" class="">
+      <button id="matrixButton">⊞</button>
+      <button id="unselectButton">X</button>
+    </div>
+    <div id="vis" class="container">
+
+      <canvas id="hiddencanvas" style="display: none"></canvas>
+      <canvas id="canvas"></canvas>
+     <!-- <svg width="100%" viewBox="0 0 500 500"></svg> -->
+    </div>
+  </main>
+  <footer id="footer">
+    <div id="timeline-buttons-container">
+      <label for="prevBtn">Time line controls</label>
+      <div id="timeline-buttons">
+        <button name="firstBtn" id="firstBtn">first</button>
+        <button name="prevBtn" id="prevBtn">prev</button>
+        <button name="nextBtn" id="nextBtn">next</button>
+        <button name="lastBtn" id="lastBtn">last</button>
+      </div>
+    </div>
+
+    <div id="timeline" style=""></div>
+  </footer>
+</div>
+
+</body>
+
+<script src="lib/moment.min.js"></script>
+<script src="lib/d3.min.js"></script>
+<script src="lib/jLouvain.js"></script>
+<script src="lib/netClustering.js"></script>
+<script src="lib/reorder.js"></script>
+<script src="lib/d3-force-reuse.min.js"></script>
+<script src="lib/d3-force-sampled.min.js"></script>
+
+<script src="lib/reorder/d3.parcoords.js"></script>
+<script src="lib/reorder/science.v2.min.js"></script>
+
+<script type="text/javascript" src="js/utils.js"></script>
+
+<script type="text/javascript" src="js/parsers/moocParser.js"></script>
+<script type="text/javascript" src="js/parsers/rugbyParser.js"></script>
+<script type="text/javascript" src="js/parsers/vdBuntParser.js"></script>
+<script type="text/javascript" src="js/parsers/rampParser.js"></script>
+<script type="text/javascript" src="js/parsers/infoVisParser.js"></script>
+<script type="text/javascript" src="js/parsers/generatedParser.js"></script>
+
+<script type="text/javascript" src="js/data/configController.js"></script>
+<script type="text/javascript" src="js/data/dataController.js"></script>
+
+<script type="text/javascript" src="js/handlers/zoomHandler.js"></script>
+<script type="text/javascript" src="js/handlers/dragHandler.js"></script>
+
+<script type="text/javascript" src="js/widgets/clustering/clusteringView.js"></script>
+<script type="text/javascript" src="js/widgets/clustering/clusteringController.js"></script>
+
+<script type="text/javascript" src="js/widgets/reordering/reorderingView.js"></script>
+<script type="text/javascript" src="js/widgets/reordering/reorderingController.js"></script>
+
+<script type="text/javascript" src="js/widgets/clustersView.js"></script>
+
+<script type="text/javascript" src="js/widgets/timelineView.js"></script>
+
+<script type="text/javascript" src="js/widgets/matrix.js"></script>
+<script type="text/javascript" src="js/widgets/nodetrix.js"></script>
+
+<script type="text/javascript" src="js/main.js"></script>
+
+</html>

@@ -1,0 +1,459 @@
+/*! HTML5 Boilerplate v7.2.0 | MIT License | https://html5boilerplate.com/ */
+
+/* main.css 2.0.0 | MIT License | https://github.com/h5bp/main.css#readme */
+/*
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+html {
+  color: #222;
+  font-size: 1em;
+  line-height: 1.4;
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+/*
+ * Remove text-shadow in selection highlight:
+ * https://twitter.com/miketaylr/status/12228805301
+ *
+ * Vendor-prefixed and regular ::selection selectors cannot be combined:
+ * https://stackoverflow.com/a/16982510/7133471
+ *
+ * Customize the background color to match your design.
+ */
+
+::-moz-selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+::selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+/*
+ * A better looking default horizontal rule
+ */
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+/*
+ * Remove the gap between audio, canvas, iframes,
+ * images, videos and the bottom of their containers:
+ * https://github.com/h5bp/html5-boilerplate/issues/440
+ */
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+  vertical-align: middle;
+}
+
+/*
+ * Remove default fieldset styles.
+ */
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+p {
+  margin: 0;
+}
+
+.visualization {
+  display: grid;
+  grid-template-columns: 368px 1fr;
+  grid-template-rows: calc(100vh - 80px) 80px;
+  justify-content: space-between;
+  background-color: #ddd;
+  height: 100%;
+}
+
+#vis {
+  width: 100%;
+  height: 100%;
+}
+
+#selectiontools {
+  position: absolute;
+  left: calc(50% - 4rem);
+  width: 9rem;
+  display: flex;
+  justify-content: space-between;
+  top: -4em;
+  transition: top .17s ease-in-out 0s;
+}
+
+#selectiontools button {
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+  border: solid 1px rgba(0, 0, 0, .5);
+}
+
+#matrixButton {
+  background-color: #43c64a;
+}
+
+#unselectButton {
+  background-color: #c9535a;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+aside {
+  color: rgba(0,0,0,.87);
+  display: flex;
+  align-items: stretch;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff;
+}
+
+main {
+  position: relative;
+  height: 100%;
+}
+
+svg {
+  max-height: calc(100vh - 80px);
+}
+
+footer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  grid-column-start: span 2;
+  display: flex;
+  flex-direction: row;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.col > form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+}
+
+.radiogroups {
+  background-color: #fff;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-bottom: .2rem;
+}
+
+.radiogroup {
+  justify-content: space-between;
+}
+
+.radiogroup label {
+  margin-left: .5rem;
+  margin-right: .5rem;
+  font-weight: 300;
+  font-size: .8rem;
+  flex-grow: 1;
+}
+
+.group {
+  padding: 0;
+}
+
+.astart {
+  align-items: flex-start;
+}
+
+.aend {
+  align-items: flex-end;
+}
+
+.acenter {
+  align-items: center;
+}
+
+.jright {
+  justify-content: right;
+}
+
+.jcenter {
+  justify-content: center;
+}
+
+.jspaceevenly {
+  justify-content: space-evenly;
+}
+
+.border-bottom {
+  border-bottom: 2px solid #d4d4d4;
+}
+
+.viscontainer {
+  width: 100%;
+  height: 100%;
+}
+
+#nodetrix-spinner {
+  position: relative;
+  width: 100%;
+  height: 80%;
+}
+
+#nodetrix {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#timeline-buttons-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 368px;
+  padding: 0.5rem 1rem;
+  box-sizing:border-box;
+  background-color: #888;
+  color: #fff;
+}
+
+
+#timeline-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+#timeline {
+  background-color: #fff;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  scrollbar-gutter: stable;
+  align-content: center;
+}
+
+#timeline-buttons button {
+  width: 5rem;
+  height: 80%;
+}
+
+.timeslice {
+  height: 100%;
+  width: 100%;
+  min-width: 140px;
+  max-width: 260px;
+  background-color: #fff;
+  border-right: 1px solid #e1e1e1;
+  align-self: center;
+  text-align: center;
+  font-size: 22pt;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.timeslice:hover {
+  background-color: #ccc;
+}
+
+.active {
+  background-color: #aaa;
+}
+
+.background {
+  stroke: transparent;
+  stroke-width: 1px;
+  fill: white;
+}
+
+.brush {
+  fill: transparent;
+  stroke: gray;
+  stroke-width: 1px;
+}
+
+#clusterslabel {
+  margin-left: 1rem;
+}
+
+#colorscale {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#clusterslist {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+#nodeslist {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+#colorscale .colorscale-item {
+  display: flex;
+  width: 100%;
+  height: 2rem;
+  justify-content: left;
+  align-items: center;
+  padding: 0;
+  border-bottom: #fff solid 1px;
+  flex-shrink: 0;
+}
+
+#colorscale .colorscale-item.hover {
+  background-color: #dadada;
+}
+
+#colorscale button {
+  height: 1.5rem;
+  border-radius: 2px;
+  border: 1px solid #555;
+  width: 5rem;
+  margin-left: 1rem;
+}
+
+#colorscale span {
+  height: 1.5rem;
+  background-color: #fff;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding-left: .5rem;
+  width: 100%;
+  overflow: hidden;
+  line-height: 1.5rem;
+}
+
+.label {
+  pointer-events: none;
+  font: 16px sans-serif;
+  color: rgba(0, 0, 0, .87);
+  text-shadow: 0 2px 1px #fff, 2px 0 1px #fff, 0 -2px 1px #fff, -2px 0 1px #fff;
+
+}
+
+
+#utility-button-container {
+  width: 100%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  box-sizing:border-box;
+  background-color: #888;
+  color: #fff;
+  height: 70px;
+}
+
+#toolbar {
+  padding-top: .1rem;
+  width: 100%;
+  justify-content: left;
+  align-items: center;
+}
+
+#toolbar button{
+  margin-right: 1rem;
+  width: 7rem;
+}
+
+#data-chooser-container {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: .5rem 1rem;
+}
+
+#files {
+  margin-bottom: .5rem;
+}
+
+#datasets {
+  width: 135px;
+}
+
+label {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.create-active {
+  background-color: #a3a3a3;
+}
+
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  /* width: 120px; */
+  background-color: #fff;
+  border: solid 1px #aaa;
+  text-align: center;
+  padding: 2px 1rem;
+  border-radius: 2px;
+  margin-left: .5rem;
+  display: inline-block;
+  position: absolute;
+  z-index: 1;
+  max-width: 300px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
