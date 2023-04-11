@@ -404,9 +404,9 @@ class Matrix {
   drawBridge(link) {
     let _this = this;
 
-   // if (link.invisible || !link.sourceNode.xPos || !link.targetNode.xPos || !link.sourceNode.yPos || !link.targetNode.yPos) {
-   //   return;
-   // }
+    if (link.invisible || !link.sourceNode.x || !link.targetNode.x || !link.sourceNode.y || !link.targetNode.y) {
+      return;
+    }
 
     let sourceAnchor = {x: link.sourceNode.x, y: link.sourceNode.y};
     let sourcePivot = {x: link.sourceNode.x, y: link.sourceNode.y};

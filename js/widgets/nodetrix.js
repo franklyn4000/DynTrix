@@ -109,7 +109,7 @@ class NodeTrix {
 
     this.simulation = d3.forceSimulation()
       .velocityDecay(0.56)
-      .force("charge", d3.forceManyBodyReuse().update(update).strength(d => d.charge).distanceMin(13).theta(1.2))
+      .force("charge", d3.forceManyBody().strength(d => d.charge).distanceMin(13).theta(1.2))
 
       .force("link", d3.forceLink().id(d => d.id).distance(d => d.distance).strength(d => d.strength))
       .force('center', d3.forceCenter(this.w / 2, this.h / 2))
@@ -606,13 +606,31 @@ class NodeTrix {
       n.invisible = !getNodeById(_this.logicalGraph.nodes, n.id);
     });
 */
-    /*
+/*
     this.visualGraph.links.forEach(function (link, i) {
       link.sourceNode = getNodeById(_this.visualGraph.nodes, link.source);
       link.targetNode = getNodeById(_this.visualGraph.nodes, link.target);
       link.invisible = !(getNodeById(_this.logicalGraph.nodes, link.sourceNode.id)
         && getNodeById(_this.logicalGraph.nodes, link.targetNode.id));
-    });*/
+    });
+*/
+
+
+    this.visualGraph.links.forEach(function (link, i) {
+      if(!_this.logicalGraph.links2.has(link.source + "-" + link.target)) {
+        link.invisible = true;
+      } else {
+        link.invisible = false;
+      }
+    });
+
+    this.viewbridges.forEach(function (bridge, i) {
+      if(!_this.logicalGraph.links2.has(bridge.source + "-" + bridge.target)) {
+        bridge.invisible = true;
+      } else {
+        bridge.invisible = false;
+      }
+    });
 
     this.update(0.1);
 
@@ -686,6 +704,7 @@ class NodeTrix {
     this.simulation.alpha(alpha).restart();
 
 
+    console.log(this.viewbridges)
   }
 
   updateOrdering(ordering) {
@@ -1100,13 +1119,17 @@ class NodeTrix {
       this.index[node.id] = nodeMatrix;
 
 
+      console.log(node.links);
+
       for (let j = 0; j < node.links.length; j++) {
+
         let edge = getLinkById(this.visualGraph.links, node.links[j].id);
 
 
         if (!edge) {
           edge = getLinkById(this.viewbridges, node.links[j].id);
         }
+
 
         if (!cluster.includes(edge.sourceNode.id) && !cluster.includes(edge.targetNode.id)) {
           throw "Linking crash";
@@ -1124,11 +1147,11 @@ class NodeTrix {
             edge.originalTarget = edge.targetNode;
             edge.targetNode = nodeMatrix;
           }
-
+/*
           // only actually draw bridge if both nodes are present in this time slice and the edge was not invisible in the first place
           edge.invisible = !(('subgraph' in edge.sourceNode || getNodeById(this.logicalGraph.nodes, edge.sourceNode.id))
             && ('subgraph' in edge.targetNode || getNodeById(this.logicalGraph.nodes, edge.targetNode.id)))
-            || edge.invisible;
+            || edge.invisible;*/
 
           if (this.visualGraph.links.includes(edge)) {
             edgesToRemove.push(edge);

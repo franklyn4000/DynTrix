@@ -75,7 +75,7 @@ class VanDeBunt {
 
         timeslice.nodes.push(newNode);
 
-        console.log(node)
+
 
         node.forEach(function (rel, j) {
 
