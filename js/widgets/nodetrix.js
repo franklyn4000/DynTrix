@@ -65,6 +65,8 @@ class NodeTrix {
   circlingRadius = 3;
   circlingSpeed = 12;
 
+  highlightNew = false;
+
   constructor(w, h, cfg) {
     this.cfg = cfg;
     let _this = this;
@@ -557,22 +559,33 @@ class NodeTrix {
 
   drawLink(d) {
     let _this = this;
-    this.context.moveTo(_this.logicalGraph.nodes2.get(d.target).visualNode.x, _this.logicalGraph.nodes2.get(d.target).visualNode.y);
-    this.context.lineTo(_this.logicalGraph.nodes2.get(d.source).visualNode.x, _this.logicalGraph.nodes2.get(d.source).visualNode.y);
+
+    let sourceCoords = this.calculateCircling(_this.logicalGraph.nodes2.get(d.source).visualNode);
+    let targetCoords = this.calculateCircling(_this.logicalGraph.nodes2.get(d.target).visualNode);
+
+    this.context.moveTo(targetCoords.x, targetCoords.y);
+    this.context.lineTo(sourceCoords.x, sourceCoords.y);
   }
 
   drawNode(d, context) {
 
-    let nodeX = d.x;
-    let nodeY = d.y;
-    if(d.isNew) {
-      nodeX = d.x + Math.cos(this.circlingAngle) * this.circlingRadius;
-      nodeY = d.y + Math.sin(this.circlingAngle) * this.circlingRadius;
-    }
+    let coords = this.calculateCircling(d);
+    let nodeX = coords.x;
+    let nodeY = coords.y;
 
     context.moveTo(nodeX + d.radius, nodeY);
     context.arc(nodeX, nodeY, d.radius, 0, 2 * Math.PI);
   //  context.attr('fillStyleHidden', d.hiddenColor);
+  }
+
+  calculateCircling(d) {
+    let nodeX = d.x;
+    let nodeY = d.y;
+    if(d.isNew && !this.highlightNew || d.willGo && !this.highlightNew) {
+      nodeX = d.x + Math.cos(this.circlingAngle) * this.circlingRadius;
+      nodeY = d.y + Math.sin(this.circlingAngle) * this.circlingRadius;
+    }
+    return {x: nodeX, y:nodeY};
   }
 
   setTimeSlice(newTimeSlice) {
@@ -597,6 +610,12 @@ class NodeTrix {
         node.visualNode.isNew = true;
       } else {
         node.visualNode.isNew = false;
+      }
+
+      if(_this.data.timeslices[newTimeSlice + 1] && !_this.data.timeslices[newTimeSlice + 1].nodes2.has(node.id)) {
+        node.visualNode.willGo = true;
+      } else {
+        node.visualNode.willGo = false;
       }
     });
 
