@@ -6,8 +6,8 @@ async function parseMooc() {
     .then(function(data) {
 
 
-      graph = parseMoocGraph(data,100, 50, 8000)
-      console.log(data)
+      graph = parseMoocGraph(data, 6, 300000, 5)
+      console.log(graph)
 
     })
     .catch(function(error){
@@ -19,34 +19,53 @@ async function parseMooc() {
 }
 
 
-function parseMoocGraph(data, messageDuration, timeSlices, events) {
+function parseMoocGraph(data, timeSlices, events, numCourses) {
   let eventsProcessed = 0;
   let minEpoch = Number.MAX_VALUE;
   let maxEpoch = Number.MIN_VALUE;
 
+  let courseSet = [];
+  for(let i = 0; i < numCourses; i++) {
+    courseSet.push(i + "");
+  }
+
   let graph = {};
   graph.timeslices = [];
 
-  let fullDuration = messageDuration;
-
 
   let nodeMap = new Map();
+  let courseMap = new Map();
 
-  for (let i = 1; i < data.length; i++) {
+  let filteredData = [];
+
+  //filter data
+  for (let i = 1; i <= events; i++) {
     let line = data[i];
+    let idTarget = line.TARGETID;
+
+    if(courseSet.includes(idTarget)){
+      filteredData.push(line);
+    }
+
+  }
+
+
+
+
+  for (let i = 0; i < filteredData.length; i++) {
+    let line = filteredData[i];
     let idSource = line.USERID;
     let idTarget = line.TARGETID;
 
     if (idSource === idTarget)
       continue;
 
-    let epoch = Math.round(line.TIMESTAMP) + fullDuration;
+    let epoch = Math.round(line.TIMESTAMP);
 
     minEpoch = Math.min(minEpoch, epoch);
     maxEpoch = Math.max(maxEpoch, epoch);
-    
-    eventsProcessed++;
 
+    eventsProcessed++;
     if(eventsProcessed === events) {
       break;
     }
@@ -55,89 +74,48 @@ function parseMoocGraph(data, messageDuration, timeSlices, events) {
 
   eventsProcessed = 0;
 
-  const firstTime = moment().milliseconds(minEpoch);
-  const lastTime = moment().milliseconds(maxEpoch);
 
-  let intervalMs =  lastTime.diff(firstTime, 'milliseconds')
-  let msPerTimeslice = intervalMs / timeSlices;
+  let intervalMs =  maxEpoch - minEpoch;
+  let msPerTimeslice = Math.floor(intervalMs / timeSlices);
 
-  console.log(firstTime)
-  console.log(lastTime)
+  fullDuration = msPerTimeslice;
 
-  console.log(intervalMs)
 
-  console.log(msPerTimeslice)
+
 
   for(let i = 0; i < timeSlices; i++) {
-    let sliceTime = firstTime.clone();
-    sliceTime.add(Math.floor(msPerTimeslice * i), 'milliseconds');
+    let sliceTime = minEpoch + msPerTimeslice * i;
 
-    let sliceName = firstTime.clone().add(Math.floor(msPerTimeslice * i), 'days').milliseconds();
+    let sliceName = sliceTime + "";
 
     graph.timeslices.push({tag: sliceName, nodes: [], links: [], time: sliceTime});
   }
 
 
-  for (let i = 1; i < data.length; i++) {
-    let line = data[i];
+
+  for (let i = 0; i < filteredData.length; i++) {
+    let line = filteredData[i];
     let idSource = line.USERID;
     let idTarget = line.TARGETID;
 
     if (idSource === idTarget)
       continue;
 
-    let epoch = moment().milliseconds(Math.round(line.TIMESTAMP) + fullDuration);
+    let epoch = line.TIMESTAMP + fullDuration;
 
     if (!nodeMap.has(idSource)) {
-      let node = {name: idSource, group: 1, id: idSource};
+      let node = {name: idSource, group: 1, id: idSource, epochs: [epoch]};
       nodeMap.set(idSource, node);
 
-      graph.timeslices.forEach(function (slice, sliceId) {
-        let sliceIntervalStart = epoch.clone().subtract(fullDuration, 'milliseconds');
-        let sliceIntervalEnd = epoch.clone().add(fullDuration, 'milliseconds');
-
-        if(epoch.isBetween(sliceIntervalStart, sliceIntervalEnd)) {
-          slice.nodes.push(node);
-        }
-      });
-
-    }
-    if (!nodeMap.has(idTarget)) {
-      let node = {name: idTarget, group: 1, id: idTarget};
-      nodeMap.set(idTarget, node);
-
-      graph.timeslices.forEach(function (slice, sliceId) {
-        let sliceIntervalStart = epoch.clone().subtract(fullDuration, 'milliseconds');
-        let sliceIntervalEnd = epoch.clone().add(fullDuration, 'milliseconds');
-
-        if(epoch.isBetween(sliceIntervalStart, sliceIntervalEnd)) {
-          slice.nodes.push(node);
-        }
-      });
-    }
-
-    let source = nodeMap.get(idSource).id;
-    let target = nodeMap.get(idTarget).id;
-
-    let edge;
-    if (source > target) {
-      edge = {source: source, target: target, value: 1, id: i};
     } else {
-      edge = {source: target, target: source, value: 1, id: i};
+      nodeMap.get(idSource).epochs.push(epoch);
     }
-
-
-
-    graph.timeslices.forEach(function (slice, sliceId) {
-
-      let sliceIntervalStart = epoch.clone().subtract(fullDuration, 'milliseconds');
-      let sliceIntervalEnd = epoch.clone().add(fullDuration, 'milliseconds');
-
-
-      if(epoch.isBetween(sliceIntervalStart, sliceIntervalEnd) && !isLinkInTimeSlice(source, target, slice.links)) {
-        slice.links.push(edge);
-      }
-    });
+    if (!courseMap.has(idTarget)) {
+      let node = {name: "course " + idTarget, group: 1, id: events + idTarget, epochs: [epoch]};
+      courseMap.set(idTarget, node);
+    } else {
+      courseMap.get(idTarget).epochs.push(epoch);
+    }
 
     eventsProcessed++;
 
@@ -146,8 +124,61 @@ function parseMoocGraph(data, messageDuration, timeSlices, events) {
     }
 
   }
-  return graph
+
+
+  nodeMap.forEach(function (node) {
+    node.epochs.forEach(function (epoch) {
+      graph.timeslices.forEach(function (slice, sliceId) {
+        let sliceIntervalStart = slice.time - fullDuration;
+        let sliceIntervalEnd = slice.time + fullDuration;
+        if(epoch >= sliceIntervalStart && epoch <= sliceIntervalEnd) {
+          slice.nodes.push(node);
+        }
+      });
+    });
+  });
+
+  courseMap.forEach(function (node) {
+
+      graph.timeslices.forEach(function (slice, sliceId) {
+
+        slice.nodes.push(node);
+
+      });
+  });
+
+  for (let i = 0; i < filteredData.length; i++) {
+    let line = filteredData[i];
+    let idSource = line.USERID;
+    let idTarget = line.TARGETID;
+
+    if (idSource === idTarget)
+      continue;
+
+    let epoch = line.TIMESTAMP + fullDuration;
+
+    let source = nodeMap.get(idSource).id;
+    let target = courseMap.get(idTarget).id;
+
+    let edge = {source: source, target: target, value: 1, id: i};
+
+    graph.timeslices.forEach(function (slice, sliceId) {
+      let sliceIntervalStart = slice.time - fullDuration;
+      let sliceIntervalEnd = slice.time + fullDuration;
+
+      if(epoch >= sliceIntervalStart && epoch <= sliceIntervalEnd) {
+        slice.links.push(edge);
+      }
+    });
+
+  }
+
 
   console.log(nodeMap)
+
+
+  return graph
+
+
 
 }

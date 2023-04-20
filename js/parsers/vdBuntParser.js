@@ -160,13 +160,13 @@ class VanDeBunt {
       fileLines.splice(fileLines.length-1, 1)
       fileLines.forEach(function (line) {
         let tokens = line.trim().split(/\s+/);
-        console.log(tokens)
+
         sliceRelations[lineNumber] = [];
         tokens.forEach(function (token, i) {
           let value = parseInt(token);
          // let correctedValue = value >= RelationType.values().length ? 0 : value;
 
-          let correctedValue = value >= 6 ? 0 : value;
+          let correctedValue = value >= 3 ? 0 : value;
 
           sliceRelations[lineNumber][columnNumber] = correctedValue;
           columnNumber++;

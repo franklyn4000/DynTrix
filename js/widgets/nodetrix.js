@@ -66,6 +66,7 @@ class NodeTrix {
   circlingSpeed = 12;
 
   highlightNew = false;
+  highlightLeaving = true;
 
   constructor(w, h, cfg) {
     this.cfg = cfg;
@@ -581,9 +582,12 @@ class NodeTrix {
   calculateCircling(d) {
     let nodeX = d.x;
     let nodeY = d.y;
-    if(d.isNew && !this.highlightNew || d.willGo && !this.highlightNew) {
+    if(d.isNew && this.highlightNew) {
       nodeX = d.x + Math.cos(this.circlingAngle) * this.circlingRadius;
       nodeY = d.y + Math.sin(this.circlingAngle) * this.circlingRadius;
+    } else if(d.willGo && this.highlightLeaving) {
+      nodeX = d.x + Math.cos(-1 * this.circlingAngle) * this.circlingRadius;
+      nodeY = d.y + Math.sin(-1 * this.circlingAngle) * this.circlingRadius;
     }
     return {x: nodeX, y:nodeY};
   }
