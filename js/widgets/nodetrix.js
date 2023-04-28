@@ -68,6 +68,9 @@ class NodeTrix {
   highlightNew = false;
   highlightLeaving = true;
 
+  lassoPoints = [];
+  lassoStart = {};
+
   constructor(w, h, cfg) {
     this.cfg = cfg;
     let _this = this;
@@ -251,8 +254,29 @@ class NodeTrix {
 
   zoomstart(event) {
     this.hiddenStep();
-    let node = this.getHoveringNode(this.mouseX, this.mouseY);
-    if(event.sourceEvent.buttons === 1) {
+
+   if(event.sourceEvent.buttons === 1) {
+
+     let canvas = document.querySelector('#canvas');
+     let coords = this.getMousePos(canvas, event.sourceEvent);
+     let invertedScale = 1/ this.transform.k
+     this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
+     this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
+
+      if(this.lassoKeyPressed) {
+        this.interacting = true;
+        this.lassoStart = {x: this.mouseX, y: this.mouseY} ;
+        this.lassoPoints = [];
+        this.lassoPoints.push(this.lassoStart);
+        this.renderLasso(this.lassoPoints);
+
+      }
+
+
+
+      let node = this.getHoveringNode(this.mouseX, this.mouseY);
+     console.log(node);
+     console.log(this.mouseX, this.mouseY);
       if(node) {
         if(this.shiftKeyPressed) {
           this.selectCluster(node.cluster);
@@ -260,29 +284,10 @@ class NodeTrix {
           this.selectNode(node);
         }
         this.dragging = node;
-        let canvas = document.querySelector('#canvas');
-        let coords = this.getMousePos(canvas, event.sourceEvent);
-        let invertedScale = 1/ this.transform.k
-        this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
-        this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
-      } else if (this.lassoKeyPressed) {
 
-        this.interacting = true;
-        console.log("LASSO")
       }
     }
-  }
 
-  zoomend(event) {
-    if(this.dragging || this.interacting) {
-      event.transform.x = this.oldTransform.x;
-      event.transform.y = this.oldTransform.y;
-    } else {
-      this.oldTransform.x = event.transform.x;
-      this.oldTransform.y = event.transform.y;
-    }
-    this.dragging = null;
-    this.interacting = false;
   }
 
   zoompan(event) {
@@ -294,8 +299,39 @@ class NodeTrix {
       let invertedScale = 1/ this.transform.k
       this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
       this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
+      if (this.interacting) {
+        this.lassoPoints.push({x: this.mouseX, y: this.mouseY});
+        this.renderLasso( this.lassoPoints);
+
+      }
     }
   }
+
+  zoomend(event) {
+
+    if(this.dragging || this.interacting) {
+      event.transform.x = this.oldTransform.x;
+      event.transform.y = this.oldTransform.y;
+    } else {
+      this.oldTransform.x = event.transform.x;
+      this.oldTransform.y = event.transform.y;
+    }
+    this.dragging = null;
+
+    if(this.interacting) {
+      this.interacting = false;
+      this.lassoPoints.push(this.lassoStart);
+      this.lassoSelect();
+      this.lassoPoints = [];
+      event.transform.x = this.oldTransform.x;
+      event.transform.y = this.oldTransform.y;
+    }
+  }
+
+
+
+
+
 
   hoverCluster(cluster) {
     this.unhover();
@@ -333,6 +369,76 @@ class NodeTrix {
     });
     this.hoveredNodes.splice(0, this.hoveredNodes.length);
     this.clustersView.unhoverAll();
+  }
+
+  lassoSelect() {
+    let _this = this;
+    this.logicalGraph.nodes2.forEach(function (node) {
+      if (_this.lassoPoints.length <= 1){
+        return;
+      }
+
+      let intersectionCount = 0;
+      for (let i = 1; i < _this.lassoPoints.length; i++){
+
+        let start = _this.lassoPoints[i-1];
+        let end = _this.lassoPoints[i];
+        let line = {start: start, end: end};
+
+        let ray = {start: {x: node.visualNode.x, y: node.visualNode.y}, end: {x: 99999, y: 0}};
+        let segment = {start: start, end: end};
+        let rayDistance = {
+          x: ray.end.x - ray.start.x,
+          y: ray.end.y - ray.start.y
+        };
+        let segDistance = {
+          x: segment.end.x - segment.start.x,
+          y: segment.end.y - segment.start.y
+        };
+
+        let rayLength = Math.sqrt(Math.pow(rayDistance.x, 2) + Math.pow(rayDistance.y, 2));
+        let segLength = Math.sqrt(Math.pow(segDistance.x, 2) + Math.pow(segDistance.y, 2));
+
+        if ((rayDistance.x / rayLength === segDistance.x / segLength) &&
+          (rayDistance.y / rayLength === segDistance.y / segLength)) {
+          continue;
+        }
+
+        let T2 = (rayDistance.x * (segment.start.y - ray.start.y) + rayDistance.y * (ray.start.x - segment.start.x)) / (segDistance.x * rayDistance.y - segDistance.y * rayDistance.x);
+        let T1 = (segment.start.x + segDistance.x * T2 - ray.start.x) / rayDistance.x;
+
+        //Parametric check.
+        if (T1 < 0) {
+          continue;
+        }
+        if (T2 < 0 || T2 > 1) {
+          continue;
+        }
+        if (isNaN(T1)) {
+          continue;
+        } //rayDistance.X = 0
+
+        intersectionCount++;
+      }
+/*
+      if (intercessionCount === 0) {
+        seat.selected = false;
+        return;
+      }*/
+      console.log(intersectionCount);
+      if(intersectionCount & 1){
+        console.log('Impar');
+    //    seat.selected = true;
+        _this.selectNode(node.visualNode);
+      } else {
+        console.log('Par');
+      //  seat.selected = false;
+      }
+
+
+    });
+
+
   }
 
   selectCluster(cluster) {
@@ -516,6 +622,8 @@ class NodeTrix {
     });
     this.context.restore();
 
+    this.renderLasso(this.lassoPoints);
+
 
 
     if(_this.dragging) {
@@ -558,6 +666,38 @@ class NodeTrix {
   }
 
 
+  renderLasso(points) {
+
+    if (points.length <= 1){
+      return;
+    }
+
+    this.context.save();
+    this.context.translate(this.transform.x, this.transform.y);
+    this.context.scale(this.transform.k, this.transform.k);
+
+    this.context.setLineDash([5,3]);
+    this.context.strokeStyle = 'black';
+    this.context.fillStyle = 'rgba(0,0,0,0.2)';
+    this.context.lineWidth = 1;
+    this.context.beginPath();
+    for (let index = 0; index < points.length; index ++){
+      let point = points[index];
+      if (index === 0){
+        this.context.moveTo(point.x, point.y);
+      } else
+      {
+        this.context.lineTo(point.x, point.y);
+      }
+    }
+
+    this.context.lineTo(this.lassoStart.x, this.lassoStart.y);
+    this.context.fill();
+    this.context.stroke();
+    this.context.closePath();
+    this.context.restore();
+  }
+
   drawLink(d) {
     let _this = this;
 
@@ -574,9 +714,19 @@ class NodeTrix {
     let nodeX = coords.x;
     let nodeY = coords.y;
 
+    context.font = d.radius + "px Arial";
+    context.fillStyle = "rgba(0, 0, 0, .88)";
+    context.textBaseline = 'middle';
+    context.shadowColor = "#eee"
+    context.shadowBlur = 5;
+    context.fillText(d.name, d.x + d.radius + 5, d.y + 2);
+
     context.moveTo(nodeX + d.radius, nodeY);
     context.arc(nodeX, nodeY, d.radius, 0, 2 * Math.PI);
   //  context.attr('fillStyleHidden', d.hiddenColor);
+
+
+
   }
 
   calculateCircling(d) {

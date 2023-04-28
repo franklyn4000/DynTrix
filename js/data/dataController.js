@@ -35,6 +35,9 @@ class DataController {
 
   async loadData(dataName, callback) {
     switch (dataName) {
+      case 'charriere':
+        this.data = this.preProcessData(await parseCharriere());
+        break;
       case 'dialog':
         this.data = this.preProcessData(await parseDialog());
         break;
