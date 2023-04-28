@@ -620,6 +620,14 @@ class NodeTrix {
       _this.context.fill();
       _this.context.stroke();
     });
+
+    this.logicalGraph.nodes2.forEach(node => {
+      if(node.visualNode.hidden) {
+        return;
+      }
+      _this.drawLabel(node.visualNode, _this.context)
+    });
+
     this.context.restore();
 
     this.renderLasso(this.lassoPoints);
@@ -714,19 +722,31 @@ class NodeTrix {
     let nodeX = coords.x;
     let nodeY = coords.y;
 
-    context.font = d.radius + "px Arial";
-    context.fillStyle = "rgba(0, 0, 0, .88)";
-    context.textBaseline = 'middle';
-    context.shadowColor = "#eee"
-    context.shadowBlur = 5;
-    context.fillText(d.name, d.x + d.radius + 5, d.y + 2);
-
     context.moveTo(nodeX + d.radius, nodeY);
     context.arc(nodeX, nodeY, d.radius, 0, 2 * Math.PI);
   //  context.attr('fillStyleHidden', d.hiddenColor);
 
+  }
 
+  drawLabel(d, context) {
+    context.font = d.radius + "px Arial";
 
+    if (d.selected) {
+      context.fillStyle = "rgba(220, 25, 25, 1)";
+    } else if (d.hovered) {
+      context.fillStyle = "rgba(200, 200, 0, 1)";
+    } else if(this.hoveredNodes.length > 0 && !d.hovered) {
+      context.fillStyle = "rgba(0, 0, 0, 0.45)";
+    } else if(this.selectedNodes.length > 0 && !d.selected) {
+      context.fillStyle = "rgba(0, 0, 0, 0.65)";
+    } else {
+      context.fillStyle = '#000000'
+    }
+
+    context.textBaseline = 'middle';
+    context.shadowColor = "#eee"
+    context.shadowBlur = 5;
+    context.fillText(d.name, d.x + d.radius + 5, d.y + 2);
   }
 
   calculateCircling(d) {
