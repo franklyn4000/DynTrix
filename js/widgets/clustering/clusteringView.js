@@ -37,16 +37,44 @@ class ClusteringView {
       }
       radioGroup.appendChild(radioBtn);
 
+
+
       let btnLabel = document.createElement("label");
       btnLabel.for = clusterAlg + 'clustering';
       btnLabel.textContent = clusterAlg;
       radioGroup.appendChild(btnLabel);
+
+      let tooltip = document.createElement("div");
+      tooltip.classList.add("tooltip");
+      tooltip.innerHTML = '&#9432;';
+      let tooltiptext = document.createElement("span");
+      tooltiptext.classList.add("tooltiptext");
+      tooltiptext.innerHTML = _this.getTooltipText(clusterAlg);
+      tooltip.appendChild(tooltiptext);
+      radioGroup.appendChild(tooltip);
 
       node.appendChild(radioGroup);
     });
 
   }
 
+  getTooltipText(alg) {
+    switch (alg) {
+      case 'None':
+        return "Sort Rows by id";
+      case 'Spectral':
+        return "Linear algebra approach. Good at highlighting clusters. Bad when data has many outliers or cycles.";
+      case 'Barycenter':
+        return "Heuristic approach. Good tradeoff between quality and performance.";
+      case 'Optimal Leaf Ordering':
+        return "Robinsonian (statistic) approach. High visual quality of patterns, low performance.";
+      case 'Reverse Cuthill-McKee':
+        return "Graph-theoretic approach. Very fast, inconsistent visual quality.";
+      default:
+        return "invalid tooltip";
+    }
+
+  }
   getClustering() {
     return this.currentAlg;
   }

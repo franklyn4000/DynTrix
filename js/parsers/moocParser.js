@@ -6,7 +6,7 @@ async function parseMooc() {
     .then(function(data) {
 
 
-      graph = parseMoocGraph(data, 6, 300000, 5)
+      graph = parseMoocGraph(data, 6, 400000, 5)
       console.log(graph)
 
     })

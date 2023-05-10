@@ -19,6 +19,7 @@ class DataController {
 
         });
         */
+    /*
         const files = document.getElementById("files");
         files.addEventListener('change', (e) => {
           const file = files[0];
@@ -30,7 +31,7 @@ class DataController {
           })(file);
           reader.readAsText(e.target.files[0]);
         });
-
+*/
   }
 
   async loadData(dataName, callback) {

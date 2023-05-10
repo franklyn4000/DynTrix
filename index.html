@@ -15,10 +15,11 @@
 
 <div class="visualization">
   <aside>
-    <div id="data-chooser-container">
-      <label for="files">Upload dataset</label>
-      <input name="files" id="files" class="form-control" type="file" accept="*.tgf"">
-      <label for="datasets">Predefined datasets:</label>
+    <div id="header">
+      <h1>DynTrix</h1>
+    </div>
+    <div id="data-chooser-container" class="sidebarsection">
+      <label for="datasets">Dataset:</label>
       <select name="datasets" id="datasets">
         <option value="none">none</option>
         <optgroup label="Real-world data">
@@ -39,14 +40,7 @@
         </optgroup>
       </select>
     </div>
-    <div class="row group">
-
-      <div class="col radiogroups">
-        <label for="clustering">Clustering</label>
-        <form id="clustering" name="clustering">
-          <!-- clustering control -->
-        </form>
-      </div>
+    <div class="row group sidebarsection">
 
       <div class="col radiogroups">
         <label for="reordering">Reordering</label>
@@ -54,15 +48,50 @@
           <!-- reordering control -->
         </form>
       </div>
-    </div>
-    <div id="utility-button-container" class="">
-      <label for="">Tools</label>
-      <div id="toolbar" class="">
-        <button id="deleteButton">Delete All</button>
-        <button id="zoomButton">Zoom to fit</button>
+
+      <div class="col radiogroups">
+        <label for="clustering">Clustering</label>
+        <form id="clustering" name="clustering">
+          <!-- clustering control -->
+        </form>
       </div>
     </div>
-    <label id="clusterslabel" for="">Clusters</label>
+    <div id="util" class="sidebarsection">
+      <div class="utility-button-container" class="">
+        <p class="label-like" for="toolbar">Tools</p>
+        <div id="toolbar" class="">
+          <button id="deleteButton">Delete All</button>
+        </div>
+      </div>
+      <div class="utility-button-container">
+        <p class="label-like" for="highlight">Hightlight changes</p>
+        <div id="highlight" class="">
+          <div>
+
+            <input id="setIncoming" type="checkbox">
+            <label>Incoming</label>
+          </div>
+          <div>
+
+            <input id="setOutgoing" type="checkbox">
+            <label>Outgoing</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="filterContainer" style="">
+      <input id="filterText" type="text" placeholder="filter"></input>
+    </div>
+    <div id="labelsContainer">
+      <div>
+        <label id="clusterslabel" for="clusterslist">Clusters</label>
+      </div>
+      <div>
+        <label id="nodeslabel" for="nodeslist">Nodes</label>
+      </div>
+    </div>
     <div id="colorscale" style="">
       <div id="clusterslist" style=""></div>
       <div id="nodeslist" style=""></div>
@@ -79,7 +108,6 @@
       <canvas id="canvas"></canvas>
      <!-- <svg width="100%" viewBox="0 0 500 500"></svg> -->
     </div>
-  </main>
   <footer id="footer">
     <div id="timeline-buttons-container">
       <label for="prevBtn">Time line controls</label>
@@ -91,8 +119,12 @@
       </div>
     </div>
 
-    <div id="timeline" style=""></div>
+    <div id="timeline-container">
+      <div id="timeline" style=""></div>
+    </div>
   </footer>
+  </main>
+
 </div>
 
 </body>

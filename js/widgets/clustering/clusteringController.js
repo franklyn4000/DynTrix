@@ -10,7 +10,7 @@ class ClusteringController {
   initializeClusters(data) {
     let index = 0;
     // let palette = ["#eda", "#ab9", "#99d", "#e8a", "#bb8", "#cec", "#ba9", "#666", "#f67", "#6aa", "#a7e", "#ddd", "#129", "#833"];
-    let palette = [
+    let palette = /*[
       "#E6D690",
       "#924E7D",
       "#3F888F",
@@ -77,7 +77,67 @@ class ClusteringController {
       "#553343",
       "#989192",
       "#A68458"
-    ]
+
+
+
+
+
+      "#20b2aa","#9acd32","#cd5c5c","#696969",
+      "#6b8e23","#ff69b4","#0000ff","#adff2f",
+      "#da70d6","#d8bfd8","#b0c4de","#228b22",
+      "#2f4f4f","#90ee90","#ff1493","#7b68ee",
+      "#2e8b57","#228b22","#800000","#191970",
+      "#006400","#808000","#483d8b","#b22222",
+      "#5f9ea0","#778899","#3cb371","#bc8f8f",
+      "#663399","#008080","#bdb76b","#cd853f",
+      "#4682b4","#d2691e","#696969","#2f4f4f",
+      "#556b2f","#9acd32","#20b2aa","#cd5c5c",
+      "#00008b","#4b0082","#32cd32","#daa520",
+      "#7f007f","#8fbc8f","#b03060","#d2b48c",
+      "#66cdaa","#9932cc","#ff0000","#ff8c00",
+      "#ffa500","#ffd700","#ffff00","#c71585",
+      "#0000cd","#7cfc00","#40e0d0","#00ff00",
+      "#9400d3","#ba55d3","#00fa9a","#00ff7f",
+      "#4169e1","#dc143c","#00ffff","#00bfff",
+      "#9370db","#ff7f50","#ff00ff","#db7093",
+      "#f0e68c","#fa8072","#ffff54","#6495ed",
+      "#dda0dd","#556b2f","#8b4513","#6b8e23",
+      "#ffa07a","#afeeee","#87cefa","#7fffd4",
+      "#2e8b57","#ffe4c4","#ffc0cb"
+
+
+
+
+
+
+
+
+    ]*/
+
+      ['#dede99', '#24b8b8', '#cd5c5c',
+        '#696969',
+        '#32cd32', '#8b4513',
+        '#191970', '#ffd700', '#d8bfd8', '#ba55d3',
+        '#9932cc', '#bc8f8f', '#90ee90', '#00bfff',
+        '#c71585', '#ff7f50', '#00ffff', '#db7093',
+        '#afeeee', '#ff8c00', '#00ff7f', '#20b2aa',
+        '#cd5c5c', '#483d8b', '#9acd32', '#2f4f4f',
+        '#ff0000', '#5f9ea0', '#ffc0cb', '#00ff00',
+        '#f0e68c', '#dda0dd', '#7fffd4', '#b0c4de',
+        '#ffff00', '#adff2f', '#556b2f', '#9370db',
+        '#ffa07a', '#4169e1', '#40e0d0', '#778899',
+        '#cd853f', '#d2691e', '#800000', '#ff1493',
+        '#6b8e23', '#00fa9a', '#fa8072', '#8fbc8f',
+        '#7b68ee', '#3cb371', '#d2b48c', '#7cfc00',
+        '#4b0082', '#228b22', '#556b2f',
+        '#9acd32', '#66cdaa', '#ffa500', '#0000ff',
+        '#ffe4c4', '#00008b', '#bdb76b',
+        '#6495ed', '#9400d3', '#228b22',
+        '#7f007f', '#b22222', '#663399', '#2e8b57',
+        '#0000cd', '#daa520', '#4682b4', '#ff69b4',
+        '#6b8e23', '#87cefa', '#2f4f4f', '#ff00ff',
+        '#b03060', '#008080', '#006400',
+        '#808000', '#2e8b57', '#da70d6', '#dc143c']
 
     let groups = extractAllGroups(data);
 
@@ -86,8 +146,9 @@ class ClusteringController {
 
       if (i < groups.length) group = groups[i];
 
+
       this.clusters.push({id: i, color: palette[index], name: "cluster " + i, group: group})
-      if (index++ > palette.length) index = 0;
+      if (++index >= palette.length) index = 0;
     }
 
     return this.clusters;
@@ -138,13 +199,35 @@ class ClusteringController {
   }
 
   computeLouvainClustering(graph) {
-
     graph.timeslices.forEach(function (slice, i) {
+
       let node_data = [];
       let link_data = [];
       let init_part = {};
 
-      slice.nodes2.forEach(function (n) {
+
+      let louvainGraph = {nodes: [], links: []}
+      let louvainNodeMap = new Map();
+
+
+      let index = 0;
+      slice.nodes2.forEach(function (node) {
+
+
+        louvainNodeMap.set(node.id, index);
+       // node.id2 = index;
+        louvainGraph.nodes[index] = {id: index};
+        index++;
+      });
+
+
+      slice.links2.forEach(function (link) {
+        louvainGraph.links.push({id: louvainNodeMap.get(link.source) + "-" + louvainNodeMap.get(link.target), source: louvainNodeMap.get(link.source), target: louvainNodeMap.get(link.target)});
+      });
+
+
+
+      louvainGraph.nodes.forEach(function (n) {
         node_data.push(n.id);
         if (i === 0) {
           init_part[n.id] = n.id;
@@ -154,7 +237,7 @@ class ClusteringController {
         }
       });
 
-      slice.links2.forEach(l => link_data.push({source: l.source, target: l.target, weight: 1}));
+      louvainGraph.links.forEach(l => link_data.push({source: l.source, target: l.target, weight: 1}));
 
       let community = jLouvain()
         .nodes(node_data)
@@ -162,14 +245,18 @@ class ClusteringController {
         .partition_init(init_part);
       let result = community();
 
-      slice.nodes2.forEach(function (n) {
-        if (result && result !== 0) {
-          n.clusterings["Louvain"] = result[n.id];
-        } else {
-          n.clusterings["Louvain"] = 0;
-        }
 
-      });
+        slice.nodes2.forEach(function (n, ind) {
+
+          if (result && result !== 0) {
+            let index = louvainNodeMap.get(n.id);
+            n.clusterings["Louvain"] = result[index];
+          } else if (result === 0) {
+            n.clusterings["Louvain"] = ind;
+          }
+
+
+        });
 
     });
   }

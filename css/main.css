@@ -13,7 +13,7 @@
 
 html {
   color: #222;
-  font-size: 1em;
+  font-size: 14pt;
   line-height: 1.4;
   font-family: 'Roboto', sans-serif;
   height: 100%;
@@ -89,18 +89,30 @@ p {
   margin: 0;
 }
 
+#header {
+  background-color: #555555;
+  width: 100%;
+  height: 4rem;
+}
+
+#header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #fff;
+  margin-left: 1rem;
+  line-height: 4rem;
+}
+
 .visualization {
-  display: grid;
-  grid-template-columns: 368px 1fr;
-  grid-template-rows: calc(100vh - 80px) 80px;
-  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
   background-color: #ddd;
   height: 100%;
 }
 
 #vis {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 100px);
 }
 
 #selectiontools {
@@ -140,22 +152,26 @@ aside {
   flex-direction: column;
   height: 100%;
   background-color: #fff;
+  min-width: 25rem;
 }
 
 main {
   position: relative;
   height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 svg {
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - 100px);
 }
 
 footer {
   width: 100%;
-  height: 100%;
+  height: 100px;
   position: relative;
-  grid-column-start: span 2;
   display: flex;
   flex-direction: row;
 }
@@ -252,13 +268,11 @@ footer {
 #timeline-buttons-container {
   display: flex;
   flex-direction: column;
-  flex-grow: 0;
-  flex-shrink: 0;
-  flex-basis: 368px;
+  width: 40rem;
   padding: 0.5rem 1rem;
   box-sizing:border-box;
-  background-color: #888;
-  color: #fff;
+  background-color: #fff;
+  border-right: 1px solid rgb(0, 0, 0, .4);
 }
 
 
@@ -268,12 +282,20 @@ footer {
   justify-content: space-between;
   align-items: center;
   height: 100%;
+  gap: 3px;
+}
+
+
+#timeline-container {
+  width: 100%;
+  overflow: hidden;
 }
 
 #timeline {
   background-color: #fff;
   position: relative;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: row;
   overflow-x: scroll;
@@ -282,8 +304,10 @@ footer {
 }
 
 #timeline-buttons button {
-  width: 5rem;
+  width: 7rem;
   height: 80%;
+  border-radius: .5rem;
+  border: solid 2px rgb(0, 0, 0, .6);
 }
 
 .timeslice {
@@ -292,7 +316,7 @@ footer {
   min-width: 140px;
   max-width: 260px;
   background-color: #fff;
-  border-right: 1px solid #e1e1e1;
+  border-right: 1px solid rgb(0, 0, 0, .4);
   align-self: center;
   text-align: center;
   font-size: 22pt;
@@ -306,7 +330,8 @@ footer {
 }
 
 .active {
-  background-color: #aaa;
+  background-color: #555;
+  color: #fff;
 }
 
 .background {
@@ -321,14 +346,41 @@ footer {
   stroke-width: 1px;
 }
 
+#filterContainer {
+  display: flex;
+  justify-content: center;
+}
+
+#filterText {
+  width: 100%;
+  margin: 1rem 1rem 1rem 1rem;
+  border-radius: 2px;
+  border: 1px rgba(0, 0, 0, .87) solid;
+  height: 1.5rem;
+}
+
+#labelsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#labelsContainer div{
+  width: 50%;
+}
+
 #clusterslabel {
-  margin-left: 1rem;
+  padding-left: 1rem;
+}
+#nodeslabel {
+  padding-left: 1rem;
 }
 
 #colorscale {
   height: 100%;
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 
 #clusterslist {
@@ -350,12 +402,14 @@ footer {
 #colorscale .colorscale-item {
   display: flex;
   width: 100%;
-  height: 2rem;
+  height: 2.5rem;
   justify-content: left;
   align-items: center;
   padding: 0;
-  border-bottom: #fff solid 1px;
+  border: #fff solid 3px;
+  border-radius: 2px;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 #colorscale .colorscale-item.hover {
@@ -379,6 +433,7 @@ footer {
   width: 100%;
   overflow: hidden;
   line-height: 1.5rem;
+  border-radius: 2px;
 }
 
 .label {
@@ -389,21 +444,42 @@ footer {
 
 }
 
+.sidebarsection {
+  border-bottom: 1px solid rgba(0, 0, 0, .5);
+}
 
-#utility-button-container {
+#util {
   width: 100%;
-  flex-grow: 0;
-  flex-shrink: 0;
-  padding: 0.5rem 1rem;
-  box-sizing:border-box;
-  background-color: #888;
-  color: #fff;
-  height: 70px;
+  display: flex;
+  flex-direction: row;
+}
+
+#highlight div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 1.4rem;
+  line-height: 1.4rem;
+}
+
+.utility-button-container {
+
+  background-color: #fff;
+  width: 50%;
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.utility-button-container label {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  font-weight: 300;
+  font-size: .8rem;
+  flex-grow: 1;
 }
 
 #toolbar {
   padding-top: .1rem;
-  width: 100%;
   justify-content: left;
   align-items: center;
 }
@@ -416,8 +492,14 @@ footer {
 #data-chooser-container {
   background-color: #fff;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: .5rem 1rem;
+}
+
+
+
+#data-chooser-container select {
+  margin-left: 1rem;
 }
 
 #files {
@@ -425,10 +507,15 @@ footer {
 }
 
 #datasets {
-  width: 135px;
+  width: 100%;
 }
 
 label {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.label-like {
   font-size: 1rem;
   font-weight: 700;
 }

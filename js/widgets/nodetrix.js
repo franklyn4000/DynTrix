@@ -66,11 +66,10 @@ class NodeTrix {
   circlingSpeed = 12;
 
   highlightNew = false;
-  highlightLeaving = true;
+  highlightLeaving = false;
 
   lassoPoints = [];
   lassoStart = {};
-
   constructor(w, h, cfg) {
     this.cfg = cfg;
     let _this = this;
@@ -97,27 +96,21 @@ class NodeTrix {
 
     this.hiddenContext = graphCanvas.getContext('2d', { willReadFrequently: true, alpha: false});
 
-    d3.select(graphCanvas).call(d3.zoom()
+    this.zoom = d3.zoom()
       .scaleExtent([0.1, 3])
       .on("start", _this.zoomstart.bind(_this))
       .on("end", _this.zoomend.bind(_this))
-      .on("zoom", _this.zoompan.bind(_this)));
+      .on("zoom", _this.zoompan.bind(_this))
+    d3.select(graphCanvas)
+      .call(this.zoom);
 
-    let update = function () {
-      return function (i, nodes) {
-        if (i % 30 === 0) {
-          return true;
-        } else {
-          return false;
-        }
-      };
-    }
+
 
     this.simulation = d3.forceSimulation()
       .velocityDecay(0.56)
       .force("charge", d3.forceManyBody().strength(d => d.charge).distanceMin(13).theta(1.2))
 
-      .force("link", d3.forceLink().id(d => d.id).distance(d => d.distance).strength(d => d.strength))
+      .force("link", d3.forceLink().id(d => d.id).distance(d => d.distance))
       .force('center', d3.forceCenter(this.w / 2, this.h / 2))
       .force('forceX', d3.forceX().x(this.w * 0.5))
       .force('forceY', d3.forceY().y(this.h * 0.5))
@@ -130,6 +123,14 @@ class NodeTrix {
       });
       _this.createMatrix(cluster, null, undefined, undefined);
       _this.unselect();
+    }
+
+    document.getElementById("setIncoming").onchange = function (event) {
+      _this.highlightNew = event.currentTarget.checked
+    }
+
+    document.getElementById("setOutgoing").onchange = function (event) {
+      _this.highlightLeaving = event.currentTarget.checked
     }
 
     document.getElementById("unselectButton").onclick = function () {
@@ -207,6 +208,7 @@ class NodeTrix {
     this.matrixDragHandler.setup(this.simulation);
     this.dragHandler.setup(this.simulation);
 
+
     this.setTimeSlice(timeSlice);
     this.update(0.5);
 
@@ -217,6 +219,7 @@ class NodeTrix {
       let coords = _this.getMousePos(this, event)
       _this.mouseX = coords.x;
       _this.mouseY = coords.y;
+
       _this.hiddenStep();
       let node = _this.getHoveringNode(_this.mouseX, _this.mouseY);
       if(node) {
@@ -240,6 +243,7 @@ class NodeTrix {
       _this.circlingAngle += Math.PI / 180 * _this.circlingSpeed;
     }, 20);
 
+
   }
 
   calculateRadius(node) {
@@ -253,7 +257,7 @@ class NodeTrix {
   }
 
   zoomstart(event) {
-    this.hiddenStep();
+
 
    if(event.sourceEvent.buttons === 1) {
 
@@ -270,22 +274,25 @@ class NodeTrix {
         this.lassoPoints.push(this.lassoStart);
         this.renderLasso(this.lassoPoints);
 
-      }
+      } else {
+        this.hiddenStep();
+        let node = this.getHoveringNode(coords.x, coords.y);
 
+        if(node) {
+          if(this.shiftKeyPressed) {
+            this.selectCluster(node.cluster);
+          } else {
+            this.selectNode(node);
+          }
+          this.dragging = node;
 
-
-      let node = this.getHoveringNode(this.mouseX, this.mouseY);
-     console.log(node);
-     console.log(this.mouseX, this.mouseY);
-      if(node) {
-        if(this.shiftKeyPressed) {
-          this.selectCluster(node.cluster);
-        } else {
-          this.selectNode(node);
         }
-        this.dragging = node;
 
       }
+
+
+
+
     }
 
   }
@@ -348,12 +355,14 @@ class NodeTrix {
 
     this.unhover();
 
+
     if('rowNode' in node) {
       node.matrix.matrix.hover(node.rowNode, node.columnNode);
       this.clustersView.hoverCluster(node.rowNode.cluster);
       this.clustersView.hoverCluster(node.columnNode.cluster);
     } else {
       this.clustersView.hoverCluster(node.cluster);
+      this.clustersView.hoverNode(node);
     }
 
     node.hovered = true;
@@ -425,13 +434,10 @@ class NodeTrix {
         seat.selected = false;
         return;
       }*/
-      console.log(intersectionCount);
       if(intersectionCount & 1){
-        console.log('Impar');
     //    seat.selected = true;
         _this.selectNode(node.visualNode);
       } else {
-        console.log('Par');
       //  seat.selected = false;
       }
 
@@ -449,7 +455,9 @@ class NodeTrix {
       }
     });
     this.hideOrShowSelectionTools();
+    this.clustersView.selectCluster(cluster.id);
   }
+
 
   selectNode(node) {
 
@@ -466,7 +474,7 @@ class NodeTrix {
       this.selectedNodes.splice(this.selectedNodes.indexOf(node), 1);
     }
     this.hideOrShowSelectionTools();
-
+    this.clustersView.selectNode(node);
   }
 
   unselect() {
@@ -505,11 +513,15 @@ class NodeTrix {
     let col = this.hiddenContext.getImageData(mouseX, mouseY, 1, 1).data;
     let colKey = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
 
+
     let nodeData = this.data.colorToNode.get(colKey);
     if(nodeData && col[3] === 255) {
+
       return nodeData;
     }
+
     nodeData = this.colorToMatrixCell.get(colKey);
+
     if(nodeData && col[3] === 255) {
       let rowNode = nodeData.rowNode;
       let columnNode = nodeData.columnNode;
@@ -547,7 +559,7 @@ class NodeTrix {
     this.context.translate(this.transform.x, this.transform.y);
     this.context.scale(this.transform.k, this.transform.k);
 
-    this.hiddenContext.clearRect(0, 0, this.w, this.h);
+    //this.hiddenContext.clearRect(0, 0, this.w, this.h);
 
     this.logicalGraph.links2.forEach( link => {
       if(link.visualLink.hidden) {
@@ -600,10 +612,10 @@ class NodeTrix {
       }
 
       if (node.visualNode.selected) {
-        _this.context.strokeStyle = "rgba(220, 25, 25, 1)";
+        _this.context.strokeStyle = _this.cfg.general.selectionColor;
         _this.context.lineWidth = 2;
       } else if (node.visualNode.hovered) {
-        _this.context.strokeStyle = "rgba(200, 200, 0, 1)";
+        _this.context.strokeStyle = _this.cfg.general.hoverColor;
         _this.context.lineWidth = 3;
       } else if(_this.hoveredNodes.length > 0 && !node.visualNode.hovered) {
         _this.context.strokeStyle = "rgba(0, 0, 0, 0.45)";
@@ -654,7 +666,8 @@ class NodeTrix {
 
   hiddenStep() {
     let _this = this;
-    this.context.clearRect(0, 0, this.w, this.h);
+    this.hiddenContext.clearRect(0, 0, this.w, this.h);
+
 
     this.hiddenContext.save();
     this.hiddenContext.translate(this.transform.x, this.transform.y);
@@ -877,9 +890,16 @@ class NodeTrix {
 
     });
 
+    this.visualGraph.links.forEach(function (n) {
+      n.distance = (n.sourceNode.radius + n.targetNode.radius) * _this.cfg.link.distance ;
+      if (n.invisible) {
+
+        n.distance *= 1.1
+      }
+    });
 
     this.viewmatrix.forEach(function (matrix) {
-      matrix.nodeSize = matrix.cluster.length * _this.cfg.matrix.cellSize;
+     // matrix.nodeSize = matrix.cluster.length * _this.cfg.matrix.cellSize;
       matrix.height = matrix.nodeSize + _this.cfg.matrix.margin;
     });
 
@@ -896,8 +916,6 @@ class NodeTrix {
 
     this.simulation.alpha(alpha).restart();
 
-
-    console.log(this.viewbridges)
   }
 
   updateOrdering(ordering) {
@@ -1013,12 +1031,13 @@ class NodeTrix {
 
     let _this = this;
     links = links.map(d => Object.assign({}, d));
-
+/*
     links.forEach(function (link) {
       link.strength = _this.cfg.link.strength;
       link.distance = _this.cfg.link.distance;
     });
 
+ */
     /*
 
     // since bridges are just visual, for every bridge we add one invisible link to the graph
@@ -1184,9 +1203,9 @@ class NodeTrix {
       sticky: false, fixed: false, // indicates if the node is fixed in the force layout
       x: loc.x, y: loc.y, // position in the force layout
       cluster: cluster,
-      nodeSize: cluster.length * 20,
-      width: cluster.length * 20 + 10,
-      height: cluster.length * 20 + 10, // size of the box to avoid overlap in d3cola and visual size
+      nodeSize: cluster.length * _this.cfg.matrix.cellSize,
+      width: cluster.length * _this.cfg.matrix.cellSize + 10,
+      height: cluster.length * _this.cfg.matrix.cellSize + 10, // size of the box to avoid overlap in d3cola and visual size
       weight: 1,
       subgraph: {nodes: new Map(), links: new Map()},
       matrix: new Matrix(d3.select(_this), _this.cfg),
@@ -1283,9 +1302,9 @@ class NodeTrix {
  */
         this.matrix.setTimeslice(leavingNodes);
 
-        this.nodeSize = cluster.length * 20;
-        this.width = cluster.length * 20 + 10;
-        this.height = cluster.length * 20 + 10;
+        this.nodeSize = cluster.length * _this.cfg.matrix.cellSize,
+        this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
+        this.height = cluster.length * _this.cfg.matrix.cellSize + 10;
       }
     };
     this.viewmatrix.push(nodeMatrix);
@@ -1312,7 +1331,6 @@ class NodeTrix {
       this.index[node.id] = nodeMatrix;
 
 
-      console.log(node.links);
 
       for (let j = 0; j < node.links.length; j++) {
 

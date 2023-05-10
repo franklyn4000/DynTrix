@@ -1,6 +1,10 @@
 {
+  "general": {
+    "hoverColor": "rgba(200, 200, 0, 0.8)",
+    "selectionColor": "rgba(220, 25, 25, 0.8)"
+  },
   "node": {
-    "charge": -500,
+    "charge": -700,
     "radiusS": 8,
     "radiusM": 12,
     "radiusL": 16,
@@ -9,8 +13,8 @@
     "strokeWidth": 1
   },
   "link": {
-    "strength": 0.4,
-    "distance": 32,
+    "strength": 1.5,
+    "distance": 2.3,
     "bridgeStrength": 0.05,
     "stroke": "#000",
     "strokeWidth": 1

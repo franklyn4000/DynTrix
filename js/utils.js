@@ -10,6 +10,7 @@ function calculateTheta(sourceNode, targetNode) {
 }
 
 function updateAnchor(nodeMatrix, anchorIndex, theta, margin, anchor, pivot) {
+
   anchor.x = nodeMatrix.x - nodeMatrix.nodeSize / 2.0;
   anchor.y = nodeMatrix.y - nodeMatrix.nodeSize / 2.0;
 

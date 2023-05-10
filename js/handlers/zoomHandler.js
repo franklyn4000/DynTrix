@@ -16,10 +16,10 @@ class ZoomHandler {
     let svg = d3.select('svg');
     let zoomBtn = document.getElementById('zoomButton');
 
-    zoomBtn.onclick = function () {
+   /* zoomBtn.onclick = function () {
       _this.restart(120);
     };
-
+*/
     this.zoom = d3.zoom()
       .scaleExtent([this.minZoom, this.maxZoom])
       .on("zoom", function ({transform}) {
