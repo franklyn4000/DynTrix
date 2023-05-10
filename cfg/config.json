@@ -1,7 +1,9 @@
 {
   "general": {
     "hoverColor": "rgba(200, 200, 0, 0.8)",
-    "selectionColor": "rgba(220, 25, 25, 0.8)"
+    "selectionColor": "rgba(220, 25, 25, 0.8)",
+    "selectionColor2": "rgba(240, 105, 105, 0.8)",
+    "secondaryColor": "rgba(240, 25, 25, 1)"
   },
   "node": {
     "charge": -700,

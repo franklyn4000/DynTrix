@@ -12,10 +12,12 @@ class Matrix {
   links = [];
   labels = new Map();
   hoverNodes = {rowNode:null, columnNode:null};
+  tempNode = null;
 
-  constructor(svg, cfg) {
+  constructor(svg, cfg, tempNode) {
     this.svg = svg;
     this.cfg = cfg;
+    this.tempNode = tempNode;
   }
 
   setup(data, links, labels, ordering, clusters, reorderingController, context, hiddenContext, transform) {
@@ -30,15 +32,7 @@ class Matrix {
     this.transform = transform;
 
 
-    data.forEach(function (d, i) {
-      let label = {};
 
-      label.name = data[i][i].node.name;
-      label.color = data[i][i].node.color;
-      label.node = data[i][i].node;
-
-      _this.labels.set(data[i][i].node.id, label);
-    });
 /*
     this.labels = labels ? labels : new Map();
     console.log(_this.labels)
@@ -62,12 +56,9 @@ class Matrix {
     let _this = this;
 
     //this.submatrix = data;
-    console.log(leavingNodes)
 
     this.submatrix.forEach(function (row, i) {
       row.forEach(function (subCell, j) {
-        console.log(subCell)
-        console.log(i, j)
 
         subCell.greyed = leavingNodes.indexOf(subCell.n1.id) > -1 || leavingNodes.indexOf(subCell.n2.id) > -1;
 
@@ -113,8 +104,7 @@ class Matrix {
     this.submatrix.forEach(function (row, i) {
       let rowY = _this.orderStore.oldOrder ? oldScale(i) : _this.scale(i);
 
-      _this.labels.get(_this.submatrix[i][i].node.id).x = _this.cfg.matrix.cellSize * _this.submatrix.length;
-      _this.labels.get(_this.submatrix[i][i].node.id).y = rowY + _this.cfg.matrix.cellSize;
+
 
       _this.submatrix[i][i].node.nodeIndex = i;
 
@@ -129,6 +119,12 @@ class Matrix {
         cell.y = rowY;
 
         cell.hiddenColor = subCell.hiddenColor;
+
+        if(_this.isHoveringSubCell(subCell)) {
+          cell.strokeColor = _this.cfg.general.hoverColor;
+        } else {
+          cell.strokeColor = "rgba(0, 0, 0, 1)";
+        }
 
         if(subCell.greyed) {
           cell.color = "#ddd";
@@ -148,12 +144,16 @@ class Matrix {
         }
         //ell.color = subCell.hiddenColor;
 
-        if(_this.isHoveringSubCell(subCell)) {
-          cell.strokeColor = "rgba(200, 200, 0, 1)";
-        } else {
-          cell.strokeColor = "rgba(0, 0, 0, 1)";
+
+
+        if(subCell.node && subCell.node.selected || subCell.n1 && subCell.n1.selected || subCell.n2 && subCell.n2.selected) {
+          cell.strokeColor = _this.cfg.general.selectionColor;
+          cell.color = _this.cfg.general.selectionColor2;
         }
 
+        if(i === j) {
+          _this.submatrix[i][j].labelColor = cell.strokeColor;
+        }
 
         _this.cells.push(cell);
       });
@@ -241,6 +241,23 @@ class Matrix {
 
 
      */
+
+    _this.submatrix.forEach(function (d, i) {
+      let rowY = _this.orderStore.oldOrder ? oldScale(i) : _this.scale(i);
+      let label = {};
+
+
+      label.name = _this.submatrix[i][i].node.name;
+      label.color = _this.submatrix[i][i].labelColor;
+      label.node = _this.submatrix[i][i].node;
+
+      _this.labels.set(_this.submatrix[i][i].node.id, label);
+      _this.labels.get(_this.submatrix[i][i].node.id).x = _this.cfg.matrix.cellSize * _this.submatrix.length;
+      _this.labels.get(_this.submatrix[i][i].node.id).y = rowY + _this.cfg.matrix.cellSize;
+    });
+
+
+
     this.draw(transform);
   }
 
@@ -255,6 +272,14 @@ class Matrix {
     this.update(false, null);
   }
 
+
+  hoverNode(node) {
+    this.hoverNodes.rowNode = node;
+    this.hoverNodes.columnNode = node;
+    this.update(false, null);
+  }
+
+
   unhover() {
     this.hoverNodes.rowNode = null;
     this.hoverNodes.columnNode = null;
@@ -268,6 +293,7 @@ class Matrix {
     let xCenter = xPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
     let yCenter = yPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
 
+    let margin = 1;
 
 
     this.hiddenContext.save();
@@ -281,6 +307,15 @@ class Matrix {
       _this.hiddenContext.fill();
     });
     this.context.restore();
+
+
+    let buttonSize = 28;
+    _this.context.beginPath();
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.fillStyle = this.submatrix[0][0].parent.deleteHiddenColor;
+    _this.context.fill();
+    this.context.restore();
+
   }
 
   draw(transform, xPos, yPos) {
@@ -301,6 +336,27 @@ class Matrix {
       _this.context.stroke();
 
     });
+    this.context.restore();
+
+    this.context.save();
+    this.context.translate(transform.x, transform.y);
+    this.context.scale(transform.k, transform.k);
+
+    let buttonSize = 28;
+    _this.context.beginPath();
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.fillStyle = _this.cfg.general.secondaryColor;
+    _this.hiddenContext.strokeStyle = "#555";
+    _this.context.fill();
+    _this.context.stroke();
+    this.context.restore();
+
+    this.context.save();
+    this.context.translate(transform.x, transform.y);
+    this.context.scale(transform.k, transform.k);
+    _this.context.font = "20px Arial";
+    _this.context.fillStyle = "#333";
+    _this.context.fillText("X", xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2 + 7, yCenter - _this.cfg.matrix.cellSize * 2 + 8);
     this.context.restore();
 
 
@@ -422,9 +478,6 @@ class Matrix {
     if ('subgraph' in link.sourceNode) {
       if(!link.sourceNode.matrix) return;
       let index = link.originalSource.nodeIndex;
-      //console.log(link.sourceNode.matrix.scale.domain())
-      //console.log(link.sourceNode.subgraph.nodes)
-     // console.log(link.originalSource)
 
       updateAnchor(link.sourceNode, index, theta, _this.cfg.matrix.margin, sourceAnchor, sourcePivot);
     }
