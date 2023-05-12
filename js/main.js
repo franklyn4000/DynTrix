@@ -16,7 +16,7 @@ function createNodeTrix(data) {
     nodetrix.destroy();
   }
   let clusteringView = new ClusteringView();
-  clusteringView.setupClusterings(['None', 'Labels', 'Louvain', 'CNM (slow)']);
+  clusteringView.setupClusterings(['None', 'Labels', 'Louvain']);
   let clusteringController = new ClusteringController();
   clusteringController.preComputeAllClusterings(data)
   let reorderingView = new ReorderingView();

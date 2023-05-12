@@ -75,6 +75,8 @@ class ReorderingView {
         return "Robinsonian (statistic) approach. High visual quality of patterns, low performance.";
       case 'Reverse Cuthill-McKee':
         return "Graph-theoretic approach. Very fast, inconsistent visual quality.";
+      case 'Volatility-Based':
+        return "Stable nodes in the center, volatile nodes towards the edges.";
       default:
         return "invalid tooltip";
     }

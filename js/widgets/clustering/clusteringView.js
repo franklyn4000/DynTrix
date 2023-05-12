@@ -61,15 +61,11 @@ class ClusteringView {
   getTooltipText(alg) {
     switch (alg) {
       case 'None':
-        return "Sort Rows by id";
-      case 'Spectral':
-        return "Linear algebra approach. Good at highlighting clusters. Bad when data has many outliers or cycles.";
-      case 'Barycenter':
-        return "Heuristic approach. Good tradeoff between quality and performance.";
-      case 'Optimal Leaf Ordering':
-        return "Robinsonian (statistic) approach. High visual quality of patterns, low performance.";
-      case 'Reverse Cuthill-McKee':
-        return "Graph-theoretic approach. Very fast, inconsistent visual quality.";
+        return "No clustering";
+      case 'Labels':
+        return "Cluster nodes by pre-defined labels that are provided with the dataset";
+      case 'Louvain':
+        return "Use the Louvain algorithm to find a clustering";
       default:
         return "invalid tooltip";
     }

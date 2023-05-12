@@ -52,25 +52,26 @@ class Matrix {
   }
 
 
-  setTimeslice(leavingNodes) {
+  setTimeslice(leavingNodes, logicalGraph) {
     let _this = this;
-
-    //this.submatrix = data;
 
     this.submatrix.forEach(function (row, i) {
       row.forEach(function (subCell, j) {
-
         subCell.greyed = leavingNodes.indexOf(subCell.n1.id) > -1 || leavingNodes.indexOf(subCell.n2.id) > -1;
-
         if(subCell.greyed) {
           subCell.color = undefined;
         }
-
-
-
+        subCell.z = 0;
       });
     });
 
+    logicalGraph.links2.forEach(function (link) {
+      let cell = getMatrixCellsByLinkId(_this.submatrix, link.source, link.target)
+      if(cell) {
+        cell.n2.z = 1;
+        cell.n1.z = 1;
+      }
+    });
 
 
     //TODO: retain ordering

@@ -629,7 +629,7 @@ class NodeTrix {
     });
     this.context.restore();
     this.viewmatrix.forEach(matrix => {
-      console.log(matrix)
+
 
       matrix.matrix.draw(_this.transform, matrix.x, matrix.y);
     });
@@ -926,7 +926,6 @@ class NodeTrix {
         if (n.yPos) n.y = n.yPos;
 
 
-        console.log(n.charge)
 
       } else {
         n.charge = _this.cfg.node.charge;
@@ -966,8 +965,6 @@ class NodeTrix {
 
     this.simulation.alpha(alpha).restart();
 
-    console.log(this.visualGraph.links);
-    console.log(this.viewbridges)
   }
 
   updateOrdering(ordering) {
@@ -1309,14 +1306,21 @@ class NodeTrix {
 
         this.subgraph.links.forEach(function (link) {
 
-          let source = link.sourceNode.id;
-          let target = link.targetNode.id;
-          if (source < 0 || target < 0) throw "Linking error: from " + source + " to " + target;
 
-          let matrixNodes = getMatrixNodeById(data, source, target);
+          if(!link.invisible) {
 
-          matrixNodes.n1.z += link.value;
-          matrixNodes.n2.z += link.value;
+            let source = link.sourceNode.id;
+            let target = link.targetNode.id;
+            if (source < 0 || target < 0) throw "Linking error: from " + source + " to " + target;
+
+            let matrixNodes = getMatrixCellsByLinkId(data, source, target);
+
+            matrixNodes.n1.z += link.value;
+            matrixNodes.n2.z += link.value;
+
+          }
+
+
 
           //data[source][target].z += link.value;
           //data[target][source].z += link.value;
@@ -1357,7 +1361,9 @@ class NodeTrix {
 
 
  */
-        this.matrix.setTimeslice(leavingNodes);
+
+
+        this.matrix.setTimeslice(leavingNodes, _this.logicalGraph);
 
         this.nodeSize = cluster.length * _this.cfg.matrix.cellSize,
         this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
@@ -1450,7 +1456,6 @@ class NodeTrix {
 
    // this.visualGraph.nodes.push(tempNode);
 
-    console.log(this.visualGraph)
     while (edgesToRemove.length > 0) {
       let edgeToRemove = edgesToRemove.pop();
       this.visualGraph.links[this.visualGraph.links.indexOf(edgeToRemove)].hidden = true;
@@ -1474,6 +1479,8 @@ class NodeTrix {
     this.unselect();
 
     this.colorToDeleteMatrix.set(nodeMatrix.deleteHiddenColor, nodeMatrix);
+
+
 
     return nodeMatrix;
 

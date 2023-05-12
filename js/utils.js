@@ -97,7 +97,7 @@ function getVisualNodeById(nodes, id) {
 }
 
 
-function getMatrixNodeById(matrix, source, target) {
+function getMatrixCellsByLinkId(matrix, source, target) {
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix.length; j++) {
       if(matrix[i][j].n1.id === source && matrix[i][j].n2.id === target) {

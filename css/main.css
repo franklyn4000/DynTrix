@@ -544,3 +544,9 @@ label {
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.help {
+  font-size: 0.8rem;
+  margin-left: 2rem;
+  margin-top: 1rem;
+}
