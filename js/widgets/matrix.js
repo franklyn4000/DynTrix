@@ -94,7 +94,9 @@ class Matrix {
 
 
 
-      _this.submatrix[i][i].node.nodeIndex = i;
+      _this.submatrix[i][i].node.nodeIndex = rowY / _this.cfg.matrix.cellSize;
+
+      console.log(i, rowY, _this.submatrix[i][i])
 
       row.forEach(function (subCell, j) {
         let cell = {};
@@ -296,7 +298,7 @@ class Matrix {
 
     let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(this.cells[0].x + xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, this.cells[0].y + yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
     _this.context.fillStyle = this.submatrix[0][0].parent.deleteHiddenColor;
     _this.context.fill();
     this.context.restore();
@@ -329,7 +331,7 @@ class Matrix {
 
     let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(this.cells[0].x + xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, this.cells[0].y + yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
     _this.context.fillStyle = _this.cfg.general.secondaryColor;
     _this.hiddenContext.strokeStyle = "#555";
     _this.context.fill();

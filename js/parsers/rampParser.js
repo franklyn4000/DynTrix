@@ -121,8 +121,6 @@ function parseRampGraph(lines) {
     let minSrcNodePresence = idToRampNode.get(srcNode).TIME;
     let minTgtNodePresence = idToRampNode.get(tgtNode).TIME;
 
-   // console.log(minEdgePresence, maxEdgePresence, minSrcNodePresence, minTgtNodePresence)
-
 
     startTime = Math.min(startTime, minSrcNodePresence);
     startTime = Math.min(startTime, minTgtNodePresence);

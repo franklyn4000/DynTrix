@@ -7,14 +7,12 @@ async function parseMooc() {
 
 
       graph = parseMoocGraph(data, 6, 400000, 5)
-      console.log(graph)
 
     })
     .catch(function(error){
       console.log(error);
     })
 
-  console.log(graph)
   return graph;
 }
 
@@ -173,8 +171,6 @@ function parseMoocGraph(data, timeSlices, events, numCourses) {
 
   }
 
-
-  console.log(nodeMap)
 
 
   return graph

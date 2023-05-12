@@ -274,14 +274,12 @@ class NodeTrix {
      this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
 
       if(this.lassoKeyPressed) {
-        this.gotoNode(this.logicalGraph.nodes2.get(1));
-        /*
         this.interacting = true;
         this.lassoStart = {x: this.mouseX, y: this.mouseY} ;
         this.lassoPoints = [];
         this.lassoPoints.push(this.lassoStart);
         this.renderLasso(this.lassoPoints);
-*/
+
       } else {
         this.hiddenStep();
         let node = this.getHoveringNode(coords.x, coords.y);
@@ -944,7 +942,7 @@ class NodeTrix {
 
     this.visualGraph.nodes.forEach(function (n) {
       if ('subgraph' in n) {
-        n.charge = _this.cfg.matrix.charge * n.matrix.submatrix.length * n.matrix.submatrix.length;
+        n.charge = _this.cfg.matrix.charge;
         let halfWidth = (n.matrix.submatrix.length / 2 + 1) * _this.cfg.matrix.cellSize * _this.cfg.matrix.radiusFactor
         n.radius = Math.sqrt(halfWidth * halfWidth + halfWidth * halfWidth)
         //n.radius = n.matrix.submatrix.length * Math.sqrt(2) / 2 * _this.cfg.matrix.cellSize + _this.cfg.matrix.cellSize * _this.cfg.matrix.radiusFactor;
@@ -1156,6 +1154,7 @@ class NodeTrix {
       );*/
 
     this.simulation.force("link").links(links).strength(l => l.value);
+
   }
 
   copyNodeProperties(d) {
@@ -1320,42 +1319,15 @@ class NodeTrix {
           jIndex = 0;
           iIndex++;
         });
-
-
-
-
-        /*
-        this.subgraph.nodes.forEach(function (d, i) {
-          data[i] = d3.range(obj.subgraph.nodes.length).map(function (j) {
-            let hiddenColor = colorFactory.genColor();
-            _this.colorToMatrixCell.set(hiddenColor, {rowNode: d, columnNode: nm.subgraph.nodes[j]});
-            _this.colorToMatrix.set (hiddenColor, nm);
-            return {x: j, y: i, z: 0, parent: obj, hiddenColor: hiddenColor};
-          });
-          data[i][i].z = 1;
-          data[i][i].node = d;
-        });*/
-
         this.subgraph.links.forEach(function (link) {
-
-
           if(!link.invisible) {
-
             let source = link.sourceNode.id;
             let target = link.targetNode.id;
             if (source < 0 || target < 0) throw "Linking error: from " + source + " to " + target;
-
             let matrixNodes = getMatrixCellsByLinkId(data, source, target);
-
             matrixNodes.n1.z += link.value;
             matrixNodes.n2.z += link.value;
-
           }
-
-
-
-          //data[source][target].z += link.value;
-          //data[target][source].z += link.value;
         });
         return data;
       },
@@ -1367,33 +1339,6 @@ class NodeTrix {
             leavingNodes.push(nodeId);
           }
         });
-
-/*
-
-        while (leavingNodes.length > 0) {
-          let leavingNode = leavingNodes.pop();
-          this.cluster.splice(this.cluster.indexOf(leavingNode), 1);
-        }
-
-        this.subgraph.nodes = [];
-        this.subgraph.links = [];
-        for (let i = 0; i < cluster.length; i++) {
-          let node = _this.logicalGraph.nodes2.get(cluster[i]).visualNode;
-          this.subgraph.nodes.push(node);
-
-
-          for (let j = 0; j < node.links.length; j++) {
-            let edge = getLinkById(_this.visualGraph.links, node.links[j].id);
-            if (!edge) {
-              edge = getLinkById(_this.viewbridges, node.links[j].id);
-            }
-          }
-        }
-
-
-
- */
-
 
         this.matrix.setTimeslice(leavingNodes, _this.logicalGraph);
 
@@ -1407,10 +1352,6 @@ class NodeTrix {
 
     let nodesToRemove = [];
     let edgesToRemove = [];
-
-
-
-
 
     for (let i = 0; i < cluster.length; i++) {
       let node;
@@ -1427,11 +1368,6 @@ class NodeTrix {
 
       nodeMatrix.subgraph.nodes.set(node.id, node);
       this.index[node.id] = nodeMatrix;
-
-
-      console.log(node);
-
-
 
 
       for (let j = 0; j < node.links.length; j++) {
@@ -1460,11 +1396,13 @@ class NodeTrix {
           if (cluster.includes(edge.sourceNode.id) && !cluster.includes(edge.targetNode.id)) {
             edge.originalSource = edge.sourceNode;
             edge.sourceNode = nodeMatrix;
+            edge.source = nodeMatrix.id;
             tempSource = tempNode;
           }
           if (cluster.includes(edge.targetNode.id) && !cluster.includes(edge.sourceNode.id)) {
             edge.originalTarget = edge.targetNode;
             edge.targetNode = nodeMatrix;
+            edge.target = nodeMatrix.id;
             tempTarget = tempNode;
           }
 /*t
@@ -1473,8 +1411,10 @@ class NodeTrix {
             && ('subgraph' in edge.targetNode || getNodeById(this.logicalGraph.nodes, edge.targetNode.id)))
             || edge.invisible;*/
 
+
           if (this.visualGraph.links.includes(edge)) {
-            edgesToRemove.push(edge);
+          //  edgesToRemove.push(edge);
+            edge.hidden = true;
           }
 
           if (!this.viewbridges.includes(edge)) {
@@ -1604,20 +1544,22 @@ class NodeTrix {
     nodeMatrix.links.forEach(function (edge) {
       if (edge.sourceNode === nodeMatrix) {
         edge.sourceNode = edge.originalSource;
+        edge.source = edge.originalSource.id;
         delete edge.originalSource;
         if (!('subgraph' in edge.targetNode)) {
           _this.viewbridges.splice(_this.viewbridges.indexOf(edge), 1);
           edge.hidden = false;
-          _this.visualGraph.links.push(edge);
+         // _this.visualGraph.links.push(edge);
         }
       }
       if (edge.targetNode === nodeMatrix) {
         edge.targetNode = edge.originalTarget;
+        edge.target = edge.originalTarget.id;
         delete edge.originalTarget;
         if (!('subgraph' in edge.sourceNode)) {
           _this.viewbridges.splice(_this.viewbridges.indexOf(edge), 1);
           edge.hidden = false;
-          _this.visualGraph.links.push(edge);
+        //  _this.visualGraph.links.push(edge);
         }
       }
     });

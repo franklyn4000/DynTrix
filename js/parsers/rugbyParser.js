@@ -9,15 +9,12 @@ async function parseRugby() {
       let dataSet = parseRugbyTweets(data);
 
       graph = parseRugbyGraph(dataSet, 16, 24)
-      console.log(dataSet)
-
 
     })
     .catch(function(error){
       console.log(error);
     })
 
-  console.log(graph)
   return graph;
 }
 
@@ -78,16 +75,6 @@ function parseRugbyGraph(dataSet, duration, timeSlices) {
 
   let daysPerTimeslice = intervalDays / timeSlices;
 
-  console.log(dataSet.firstTime);
-  console.log(dataSet.lastTime);
-
-  console.log(firstTime);
-  console.log(lastTime);
-
-
-  console.log(intervalDays)
-  console.log(daysPerTimeslice)
-
   for(let i = 0; i < timeSlices; i++) {
     let sliceTime = firstTime.clone();
     sliceTime.add(Math.floor(daysPerTimeslice * i), 'days');
@@ -96,8 +83,6 @@ function parseRugbyGraph(dataSet, duration, timeSlices) {
 
     graph.timeslices.push({tag: sliceName, nodes: [], links: [], time: sliceTime});
   }
-
-  console.log(graph)
 
   dataSet.teams.forEach(function (team, id) {
     let node = {name:team, group: 1, id: id};

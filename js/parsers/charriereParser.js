@@ -52,8 +52,6 @@ function parseCharriereGraph(files, sliceYears, letterDuration, participantDurat
     nodeMap.set(parseInt(line.id), node);
   }
 
-  console.log(nodeMap)
-
   let lettersFile = files[1]
   for (let i = 0; i < lettersFile.length; i++) {
     let line = lettersFile[i];
@@ -76,12 +74,10 @@ function parseCharriereGraph(files, sliceYears, letterDuration, participantDurat
     let line = lettersFile[i];
     let cDate = new CharriereDate(line.date)
 
- //   console.log(line.target)
 
     let source = nodeMap.get(parseInt(line.source));
     let target = nodeMap.get(parseInt(line.target));
 
-   // console.log(nodeMap)
 
     let participantPresenceStart = cDate.compareVal - participantDuration;
     let participantPresenceEnd = cDate.compareVal + letterDuration + participantDuration;
@@ -94,7 +90,6 @@ function parseCharriereGraph(files, sliceYears, letterDuration, participantDurat
       let sourceNode = {name: source.name, group: 1, id: parseInt(source.id)};
       let targetNode = {name: target.name, group: 1, id: parseInt(target.id)};
 
-      //console.log(slice.intervalEnd, participantPresenceStart, slice.intervalStart, participantPresenceEnd)
 
       if(slice.intervalEnd >= participantPresenceStart && slice.intervalStart <= participantPresenceEnd) {
         slice.nodes.set(sourceNode.id, sourceNode);
@@ -119,8 +114,6 @@ function parseCharriereGraph(files, sliceYears, letterDuration, participantDurat
     slice.nodes = nodesArray;
   });
 
-  console.log(graph)
   return graph;
- // return graph;
 
 }
