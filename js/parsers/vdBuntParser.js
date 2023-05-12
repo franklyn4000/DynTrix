@@ -64,9 +64,40 @@ class VanDeBunt {
     let graph = {};
     graph.timeslices = [];
 
-    dataset.relations.forEach(function (relLine, i) {
+    for(let i = 0; i < dataset.relations.length; i++) {
 
       let timeslice = {tag: i, nodes: [], links: []};
+      graph.timeslices.push(timeslice)
+
+      for(let row = 0; row < dataset.relations[i].length; row++) {
+
+        let newNode = {name: dataset.students[row].label , group: dataset.students[row].programme, id: row};
+        timeslice.nodes.push(newNode);
+
+        for(let col = row + 1; col < dataset.relations[i][row].length; col++) {
+          console.log(row, col, dataset.relations[i][row][col])
+
+          if(dataset.relations[i][row][col] !== 0 || dataset.relations[i][col][row] !== 0) {
+            let matrixSize = dataset.relations[i].length;
+            let link = {source:row,target:col,value:1, id: i * matrixSize * matrixSize + col * matrixSize + row};
+            timeslice.links.push(link);
+          }
+        }
+
+      }
+
+    }
+/*
+    dataset.relations.forEach(function (relLine, i) {
+
+
+
+      let timeslice = {tag: i, nodes: [], links: []};
+
+      for(let n = 0; n < relLine.length - i; i++) {
+        console.log(relLine[n])
+      }
+
 
 
       relLine.forEach(function (node, n) {
@@ -75,12 +106,13 @@ class VanDeBunt {
 
         timeslice.nodes.push(newNode);
 
-
+       // console.log(node)
 
         node.forEach(function (rel, j) {
 
-          if(rel !== 0 && !_this.isLinkInTimeslice(j, n, timeslice)) {
-            let link = {"source":n,"target":j,"value":rel, "id": j * dataset.relations.length + n};
+          console.log()
+          if(rel !== 0 && !_this.isLinkInTimeslice(j, n, timeslice)  && !_this.isLinkInTimeslice(n, j, timeslice)) {
+            let link = {source:n,target:j,value:rel, id: j * dataset.relations.length + n};
             timeslice.links.push(link);
           }
 
@@ -96,7 +128,7 @@ class VanDeBunt {
       graph.timeslices.push(timeslice)
 
     });
-
+*/
 
 
     console.log(graph)
@@ -108,7 +140,7 @@ class VanDeBunt {
   isLinkInTimeslice(source, target, slice) {
     let linkId = -1;
     slice.links.forEach(function (link, i) {
-      if (link.source === source && link.target === target) {
+      if (link.source === source && link.target === target || link.target === source && link.source === target) {
         linkId = link.id;
       }
     });

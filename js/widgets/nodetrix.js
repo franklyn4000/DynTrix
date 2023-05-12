@@ -221,6 +221,8 @@ class NodeTrix {
       _this.mouseX = coords.x;
       _this.mouseY = coords.y;
 
+
+
       _this.hiddenStep();
       let node = _this.getHoveringNode(_this.mouseX, _this.mouseY);
       if(node) {
@@ -272,12 +274,14 @@ class NodeTrix {
      this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
 
       if(this.lassoKeyPressed) {
+        this.gotoNode(this.logicalGraph.nodes2.get(1));
+        /*
         this.interacting = true;
         this.lassoStart = {x: this.mouseX, y: this.mouseY} ;
         this.lassoPoints = [];
         this.lassoPoints.push(this.lassoStart);
         this.renderLasso(this.lassoPoints);
-
+*/
       } else {
         this.hiddenStep();
         let node = this.getHoveringNode(coords.x, coords.y);
@@ -303,6 +307,11 @@ class NodeTrix {
             this.draggingTransorm = {x: this.mouseX - node.matrix.x, y: this.mouseY - node.matrix.y}
           }
 
+        } else {
+          let node = this.getHoveringNode(this.mouseX, this.mouseY);
+            if (node && node.delete) {
+              this.delete(node.m)
+            }
 
         }
 
@@ -354,7 +363,10 @@ class NodeTrix {
   }
 
 
-
+  gotoNode(node) {
+    this.transform.x = (node.visualNode.x * this.transform.k - this.w/2) * -1;
+    this.transform.y = (node.visualNode.y * this.transform.k - this.h/2) * -1;
+  }
 
 
 
@@ -400,8 +412,14 @@ class NodeTrix {
     });
     this.hoveredNodes.splice(0, this.hoveredNodes.length);
     this.clustersView.unhoverAll();
+    this.unhoverMatrices();
   }
 
+  unhoverMatrices() {
+    this.viewmatrix.forEach(function (matrix) {
+      matrix.matrix.unhover();
+    });
+  }
 
   selectCluster(cluster) {
     this.logicalGraph.nodes2.forEach(node => {
@@ -428,13 +446,17 @@ class NodeTrix {
         this.selectedNodes.splice(this.selectedNodes.indexOf(node.rowNode), 1);
       }
 
-      if(!node.columnNode.selected) {
-        node.columnNode.selected = true;
-        this.selectedNodes.push(node.columnNode);
-      } else {
-        node.columnNode.selected = false;
-        this.selectedNodes.splice(this.selectedNodes.indexOf(node.columnNode), 1);
+
+      if(node.rowNode !== node.columnNode) {
+        if(!node.columnNode.selected) {
+          node.columnNode.selected = true;
+          this.selectedNodes.push(node.columnNode);
+        } else {
+          node.columnNode.selected = false;
+          this.selectedNodes.splice(this.selectedNodes.indexOf(node.columnNode), 1);
+        }
       }
+
     } else {
       if(!node.selected) {
         node.selected = true;
@@ -446,6 +468,9 @@ class NodeTrix {
       this.clustersView.selectNode(node);
     }
 
+    this.viewmatrix.forEach(function (matrix) {
+      //matrix.update();
+    });
     this.hideOrShowSelectionTools();
   }
 
@@ -456,6 +481,7 @@ class NodeTrix {
     this.selectedNodes.splice(0, this.selectedNodes.length);
     this.hideOrShowSelectionTools();
     this.clustersView.unselectAll();
+    this.updateMatrices()
   }
 
   unselectCluster(cluster) {
@@ -528,7 +554,7 @@ class NodeTrix {
               seat.selected = false;
               return;
             }*/
-      if(intersectionCount & 1){
+      if(intersectionCount & 1 && !node.visualNode.hidden){
         //    seat.selected = true;
         _this.selectNode(node.visualNode);
       } else {
@@ -825,6 +851,8 @@ class NodeTrix {
 
   setTimeSlice(newTimeSlice) {
 
+    this.unselect();
+
     let _this = this;
     let matrices = [];
     let matrixCoords = [];
@@ -904,13 +932,15 @@ class NodeTrix {
       this.viewmatrix[i].setTimeSlice();
     }
 
+
+
   }
 
   update(alpha = 1) {
 
     let _this = this;
 
-    this.updateMatrices(this.viewmatrix);
+    this.updateMatrices();
 
     this.visualGraph.nodes.forEach(function (n) {
       if ('subgraph' in n) {
@@ -991,7 +1021,7 @@ class NodeTrix {
 
   }
 
-  updateMatrices(matrices) {
+  updateMatrices() {
     let _this = this
 
     this.viewmatrix.forEach(function (matrix) {
@@ -1238,6 +1268,8 @@ class NodeTrix {
 
   createMatrix(cluster, invalidNodes, x, y) {
 
+    this.unselect();
+
     let _this = this;
 
     if (cluster.length <= 1) {
@@ -1395,6 +1427,9 @@ class NodeTrix {
 
       nodeMatrix.subgraph.nodes.set(node.id, node);
       this.index[node.id] = nodeMatrix;
+
+
+      console.log(node);
 
 
 

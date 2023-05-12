@@ -32,19 +32,6 @@ class Matrix {
     this.transform = transform;
 
 
-
-/*
-    this.labels = labels ? labels : new Map();
-    console.log(_this.labels)
-    if (this.labels.size === 0) {
-      data.forEach(function (d, i) {
-        console.log(_this.labels)
-        _this.labels.set(data[i][i].node.id, data[i][i].node.name);
-      });
-    }
-
-*/
-
     this.orderStore = new OrderStore();
 
     this.setOrdering(ordering, null);
@@ -144,8 +131,6 @@ class Matrix {
           }
         }
         //ell.color = subCell.hiddenColor;
-
-
 
         if(subCell.node && subCell.node.selected || subCell.n1 && subCell.n1.selected || subCell.n2 && subCell.n2.selected) {
           cell.strokeColor = _this.cfg.general.selectionColor;
@@ -309,10 +294,9 @@ class Matrix {
     });
     this.context.restore();
 
-
     let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(this.cells[0].x + xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, this.cells[0].y + yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
     _this.context.fillStyle = this.submatrix[0][0].parent.deleteHiddenColor;
     _this.context.fill();
     this.context.restore();
@@ -345,7 +329,7 @@ class Matrix {
 
     let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(this.cells[0].x + xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, this.cells[0].y + yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
     _this.context.fillStyle = _this.cfg.general.secondaryColor;
     _this.hiddenContext.strokeStyle = "#555";
     _this.context.fill();

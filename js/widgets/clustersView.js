@@ -47,11 +47,12 @@ class ClustersView {
 
 
     filteredClusters.forEach(function(cluster) {
-
+      let btnWrapper = document.createElement("div");
       let btnContainer = document.createElement("div");
+
       btnContainer.id = "clustersView-cluster-" + cluster.id;
       btnContainer.classList.add("colorscale-item");
-      btnContainer.style.backgroundColor = _this.allClusters[cluster.id].color;
+      btnWrapper.style.backgroundColor = _this.allClusters[cluster.id].color;
 
       btnContainer.addEventListener("mouseover", function( event ) {
         _this.hoverCluster(cluster.id);
@@ -103,11 +104,17 @@ class ClustersView {
       btnContainer.appendChild(btnLabel);
 
 
-      clusterView.appendChild(btnContainer);
+      btnWrapper.classList.add("colorscale-wrapper");
+
+      btnWrapper.appendChild(btnContainer);
+      clusterView.appendChild(btnWrapper);
     });
 
     filteredNodes.forEach(function(node) {
+      let btnWrapper = document.createElement("div");
       let btnContainer = document.createElement("div");
+      let gotoButton = document.createElement("button");
+
       btnContainer.id = "clustersView-node-" + node.id;
       btnContainer.classList.add("colorscale-item");
       btnContainer.style.backgroundColor = _this.allClusters[node.cluster].color;
@@ -133,13 +140,25 @@ class ClustersView {
       }, false);
 
 
+      gotoButton.addEventListener("click", function( event ) {
+
+        _this.graph.gotoNode(node);
+
+
+      }, false);
+
       let btnLabel = document.createElement("span");
 
       btnLabel.innerHTML = node.name + '';
       btnContainer.appendChild(btnLabel);
 
 
-      nodesView.appendChild(btnContainer);
+      gotoButton.innerHTML = '◎';
+      btnWrapper.classList.add("colorscale-wrapper");
+
+      btnWrapper.appendChild(btnContainer);
+      btnWrapper.appendChild(gotoButton);
+      nodesView.appendChild(btnWrapper);
     });
 
   }
@@ -155,14 +174,18 @@ class ClustersView {
   hoverCluster(cluster) {
     if(!this.isClusterSelected(cluster)) {
       //document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = pSBC(0.3, this.allClusters[cluster].color);
-      document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.hoverColor;
+      if( document.getElementById("clustersView-cluster-" + cluster)) {
+        document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.hoverColor;
+      }
     }
   }
 
   hoverNode(node) {
     if(!this.isNodeSelected(node)) {
       //document.getElementById("clustersView-node-" + node.id).style.backgroundColor = pSBC(0.3, this.allClusters[node.cluster].color);
-      document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.hoverColor;
+      if(document.getElementById("clustersView-node-" + node.id)) {
+        document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.hoverColor;
+      }
     }
   }
 
@@ -185,10 +208,11 @@ class ClustersView {
   }
 
   selectCluster(cluster) {
-    let _this = this;
-    //document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = this.graph.cfg.general.selectionColor;
-    document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
-    this.selectedClusters.push(cluster);
+    if(document.getElementById("clustersView-cluster-" + cluster)) {
+      document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+      this.selectedClusters.push(cluster);
+    }
+
   }
 
   unSelectCluster(cluster) {
