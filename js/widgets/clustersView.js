@@ -190,20 +190,24 @@ class ClustersView {
   }
 
   unhoverCluster(cluster) {
-    if(!this.isClusterSelected(cluster)) {
-      //document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = this.allClusters[cluster].color;
-      document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px #fff";
-    } else {
-      document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+    if(document.getElementById("clustersView-cluster-" + cluster)) {
+      if(!this.isClusterSelected(cluster)) {
+        //document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = this.allClusters[cluster].color;
+        document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px #fff";
+      } else {
+        document.getElementById("clustersView-cluster-" + cluster).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+      }
     }
   }
 
   unhoverNode(node) {
-    if(!this.isNodeSelected(node)) {
-     // document.getElementById("clustersView-node-" + node.id).style.backgroundColor = this.allClusters[node.cluster].color;
-      document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px #fff";
-    } else {
-      document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+    if(document.getElementById("clustersView-node-" + node.id)) {
+      if(!this.isNodeSelected(node)) {
+        // document.getElementById("clustersView-node-" + node.id).style.backgroundColor = this.allClusters[node.cluster].color;
+        document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px #fff";
+      } else {
+        document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+      }
     }
   }
 
@@ -216,28 +220,32 @@ class ClustersView {
   }
 
   unSelectCluster(cluster) {
-    document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = this.allClusters[cluster].color;
-    //document.getElementById("clustersView-cluster-" + cluster).style.border = "none";
-    this.selectedClusters.splice(this.selectedClusters.indexOf(cluster), 1);
+    if(document.getElementById("clustersView-cluster-" + cluster)) {
+      document.getElementById("clustersView-cluster-" + cluster).style.backgroundColor = this.allClusters[cluster].color;
+      //document.getElementById("clustersView-cluster-" + cluster).style.border = "none";
+      this.selectedClusters.splice(this.selectedClusters.indexOf(cluster), 1);
+    }
   }
 
   selectNode(node) {
    // document.getElementById("clustersView-node-" + node.id).style.backgroundColor = pSBC(0.45, this.allClusters[node.cluster].color);
-    if(!this.isNodeSelected(node)) {
-      document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
-    } else {
-      this.unSelectNode(node);
+    if(document.getElementById("clustersView-node-" + node.id)) {
+      if(!this.isNodeSelected(node)) {
+        document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
+      } else {
+        this.unSelectNode(node);
+      }
     }
-
-
   //  document.getElementById("clustersView-node-" + node.id).style.border = "solid 1px #000";
 
   }
 
   unSelectNode(node) {
     //document.getElementById("clustersView-node-" + node.id).style.backgroundColor = this.allClusters[node.cluster].color;
-    document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px #fff";
-    this.selectedClusters.splice(this.selectedClusters.indexOf(node.id), 1);
+    if(document.getElementById("clustersView-node-" + node.id)) {
+      document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px #fff";
+      this.selectedClusters.splice(this.selectedClusters.indexOf(node.id), 1);
+    }
   }
 
   isClusterSelected(cluster) {

@@ -60,9 +60,6 @@ class Matrix {
       }
     });
 
-
-    //TODO: retain ordering
-   // this.setOrdering("None", null);
     _this.update(false, null);
 
   }
@@ -95,8 +92,6 @@ class Matrix {
 
 
       _this.submatrix[i][i].node.nodeIndex = rowY / _this.cfg.matrix.cellSize;
-
-      console.log(i, rowY, _this.submatrix[i][i])
 
       row.forEach(function (subCell, j) {
         let cell = {};

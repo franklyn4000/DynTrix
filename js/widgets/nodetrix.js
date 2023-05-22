@@ -263,15 +263,13 @@ class NodeTrix {
   }
 
   zoomstart(event) {
-
+    let canvas = document.querySelector('#canvas');
+    let coords = this.getMousePos(canvas, event.sourceEvent);
+    let invertedScale = 1/ this.transform.k
+    this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
+    this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
 
    if(event.sourceEvent.buttons === 1) {
-
-     let canvas = document.querySelector('#canvas');
-     let coords = this.getMousePos(canvas, event.sourceEvent);
-     let invertedScale = 1/ this.transform.k
-     this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
-     this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
 
       if(this.lassoKeyPressed) {
         this.interacting = true;
@@ -362,8 +360,13 @@ class NodeTrix {
 
 
   gotoNode(node) {
-    this.transform.x = (node.visualNode.x * this.transform.k - this.w/2) * -1;
-    this.transform.y = (node.visualNode.y * this.transform.k - this.h/2) * -1;
+    if(node.visualNode.currentMatrix) {
+      this.transform.x = (node.visualNode.currentMatrix.x * this.transform.k - this.w/2) * -1;
+      this.transform.y = (node.visualNode.currentMatrix.y * this.transform.k - this.h/2) * -1;
+    } else {
+      this.transform.x = (node.visualNode.x * this.transform.k - this.w/2) * -1;
+      this.transform.y = (node.visualNode.y * this.transform.k - this.h/2) * -1;
+    }
   }
 
 
@@ -905,7 +908,10 @@ class NodeTrix {
     });
 
     this.viewbridges.forEach(function (bridge, i) {
-      if(!_this.logicalGraph.links2.has(bridge.source + "-" + bridge.target)) {
+      let source = bridge.originalSource ? bridge.originalSource.id : bridge.source;
+      let target = bridge.originalTarget ? bridge.originalTarget.id : bridge.target;
+
+      if(!_this.logicalGraph.links2.has(source + "-" + target)) {
         bridge.invisible = true;
       } else {
         bridge.invisible = false;
