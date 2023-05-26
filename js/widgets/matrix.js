@@ -21,8 +21,6 @@ class Matrix {
   }
 
   setup(data, links, labels, ordering, clusters, reorderingController, context, hiddenContext, transform) {
-    let _this = this;
-
     this.clusters = clusters;
     this.submatrix = data;
     this.links = links;
@@ -30,20 +28,17 @@ class Matrix {
     this.context = context;
     this.hiddenContext = hiddenContext;
     this.transform = transform;
-
-
     this.orderStore = new OrderStore();
 
     this.setOrdering(ordering, null);
- //   this.update(false, transform);
   }
 
 
   setTimeslice(leavingNodes, logicalGraph) {
     let _this = this;
 
-    this.submatrix.forEach(function (row, i) {
-      row.forEach(function (subCell, j) {
+    this.submatrix.forEach(function (row) {
+      row.forEach(function (subCell) {
         subCell.greyed = leavingNodes.indexOf(subCell.n1.id) > -1 || leavingNodes.indexOf(subCell.n2.id) > -1;
         if(subCell.greyed) {
           subCell.color = undefined;
@@ -276,9 +271,6 @@ class Matrix {
     let xCenter = xPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
     let yCenter = yPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
 
-    let margin = 1;
-
-
     this.hiddenContext.save();
     this.hiddenContext.translate(transform.x, transform.y);
     this.hiddenContext.scale(transform.k, transform.k);
@@ -291,9 +283,8 @@ class Matrix {
     });
     this.context.restore();
 
-    let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2, _this.cfg.matrix.buttonSize, _this.cfg.matrix.buttonSize);
     _this.context.fillStyle = this.submatrix[0][0].parent.deleteHiddenColor;
     _this.context.fill();
     this.context.restore();
@@ -324,9 +315,8 @@ class Matrix {
     this.context.translate(transform.x, transform.y);
     this.context.scale(transform.k, transform.k);
 
-    let buttonSize = 28;
     _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - buttonSize / 2, buttonSize, buttonSize);
+    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2, _this.cfg.matrix.buttonSize, _this.cfg.matrix.buttonSize);
     _this.context.fillStyle = _this.cfg.general.secondaryColor;
     _this.hiddenContext.strokeStyle = "#555";
     _this.context.fill();
@@ -338,7 +328,7 @@ class Matrix {
     this.context.scale(transform.k, transform.k);
     _this.context.font = "20px Arial";
     _this.context.fillStyle = "#333";
-    _this.context.fillText("X", xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - buttonSize / 2 + 7, yCenter - _this.cfg.matrix.cellSize * 2 + 8);
+    _this.context.fillText("X", xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2 + 7, yCenter - _this.cfg.matrix.cellSize * 2 + 8);
     this.context.restore();
 
 

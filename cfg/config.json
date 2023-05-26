@@ -34,6 +34,7 @@
     "cellStrokeWidth": 1,
     "margin": 32,
     "bridgeStroke": "#4a4a4a",
-    "bridgeStrokeWidth": 1
+    "bridgeStrokeWidth": 1,
+    "buttonSize": 28
   }
 }

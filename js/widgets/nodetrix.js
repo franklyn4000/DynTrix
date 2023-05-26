@@ -425,6 +425,8 @@ class NodeTrix {
         }
       }
 
+      node.matrix.matrix.update(false, null);
+
     } else {
       if (!node.selected) {
         node.selected = true;
