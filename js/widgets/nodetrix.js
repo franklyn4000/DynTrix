@@ -6,13 +6,6 @@ class NodeTrix {
 
   simulation = null;
 
- // svg = null;
-  node = null;
-  link = null;
-  text = null;
-  matrix = null;
-  bridge = null;
-
   path = null;
 
   clustersView = null;
@@ -34,19 +27,16 @@ class NodeTrix {
   index = {};
 
   context = null;
-  transform = {x:0, y:0, k:1};
-  oldTransform = {x:0, y:0, k:1};
+  transform = {x: 0, y: 0, k: 1};
+  oldTransform = {x: 0, y: 0, k: 1};
 
   w;
   h;
-
-  nextCol = 1;
 
   mouseX = 0;
   mouseY = 0;
 
   hoveredNodes = [];
-  highlightedNodes = [];
   selectedNodes = [];
 
   shiftKeyPressed = false;
@@ -58,10 +48,6 @@ class NodeTrix {
   colorToMatrix = new Map();
   colorToMatrixCell = new Map();
 
-  nodeVolS = 0;
-  nodeVolM = 0;
-  nodeVolL = 0;
-
   circlingAngle = 0;
   circlingRadius = 3;
   circlingSpeed = 12;
@@ -71,31 +57,29 @@ class NodeTrix {
 
   lassoPoints = [];
   lassoStart = {};
+
   constructor(w, h, cfg) {
     this.cfg = cfg;
     let _this = this;
-
-
-    let container = d3.select('#vis')
 
     let graphCanvas = d3.select('#canvas')
       .attr('width', 100 + '%')
       .attr('height', 100 + '%')
       .node();
 
-    graphCanvas.width  = graphCanvas.offsetWidth;
+    graphCanvas.width = graphCanvas.offsetWidth;
     graphCanvas.height = graphCanvas.offsetHeight;
 
     this.w = graphCanvas.offsetWidth;
     this.h = graphCanvas.offsetHeight;
 
     let hiddenCanvas = d3.select('#hiddencanvas')
-    hiddenCanvas.width  = this.w
+    hiddenCanvas.width = this.w
     hiddenCanvas.height = this.h;
 
-    this.context = graphCanvas.getContext('2d', { willReadFrequently: true});
+    this.context = graphCanvas.getContext('2d', {willReadFrequently: true});
 
-    this.hiddenContext = graphCanvas.getContext('2d', { willReadFrequently: true, alpha: false});
+    this.hiddenContext = graphCanvas.getContext('2d', {willReadFrequently: true, alpha: false});
 
     this.zoom = d3.zoom()
       .scaleExtent([0.1, 3])
@@ -105,12 +89,9 @@ class NodeTrix {
     d3.select(graphCanvas)
       .call(this.zoom);
 
-
-
     this.simulation = d3.forceSimulation()
       .velocityDecay(0.56)
       .force("charge", d3.forceManyBody().strength(d => d.charge).distanceMin(13).theta(1.2))
-
       .force("link", d3.forceLink().id(d => d.id).distance(d => d.distance))
       .force('center', d3.forceCenter(this.w / 2, this.h / 2))
       .force('forceX', d3.forceX().x(this.w * 0.5))
@@ -221,12 +202,10 @@ class NodeTrix {
       _this.mouseX = coords.x;
       _this.mouseY = coords.y;
 
-
-
       _this.hiddenStep();
       let node = _this.getHoveringNode(_this.mouseX, _this.mouseY);
-      if(node) {
-        if(_this.shiftKeyPressed) {
+      if (node) {
+        if (_this.shiftKeyPressed) {
           _this.hoverCluster(node.cluster);
         } else {
           _this.unhover();
@@ -242,10 +221,9 @@ class NodeTrix {
       _this.calculateRadius(node);
     });
 
-    setInterval( function () {
+    setInterval(function () {
       _this.circlingAngle += Math.PI / 180 * _this.circlingSpeed;
     }, 20);
-
 
   }
 
@@ -254,10 +232,10 @@ class NodeTrix {
       node.radius = this.cfg.node.radiusL;
     } else if (node.volatility <= this.data.highestVolatility * 0.66) {
       node.radius = this.cfg.node.radiusM;
-    } else{
+    } else {
       node.radius = this.cfg.node.radiusS;
     }
-    if(node.tempradius) {
+    if (node.tempradius) {
       node.radius = node.tempradius;
     }
   }
@@ -265,31 +243,29 @@ class NodeTrix {
   zoomstart(event) {
     let canvas = document.querySelector('#canvas');
     let coords = this.getMousePos(canvas, event.sourceEvent);
-    let invertedScale = 1/ this.transform.k
+    let invertedScale = 1 / this.transform.k
     this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
     this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
 
-   if(event.sourceEvent.buttons === 1) {
+    if (event.sourceEvent.buttons === 1) {
 
-      if(this.lassoKeyPressed) {
+      if (this.lassoKeyPressed) {
         this.interacting = true;
-        this.lassoStart = {x: this.mouseX, y: this.mouseY} ;
+        this.lassoStart = {x: this.mouseX, y: this.mouseY};
         this.lassoPoints = [];
         this.lassoPoints.push(this.lassoStart);
         this.renderLasso(this.lassoPoints);
-
       } else {
         this.hiddenStep();
         let node = this.getHoveringNode(coords.x, coords.y);
 
-        if(node) {
-
+        if (node) {
           if (node.delete) {
             this.delete(node.m)
             return;
           }
 
-          if(this.shiftKeyPressed) {
+          if (this.shiftKeyPressed) {
             this.selectCluster(node.cluster);
           } else {
             this.selectNode(node);
@@ -297,41 +273,33 @@ class NodeTrix {
           this.dragging = node;
           this.draggingTransorm = {x: 0, y: 0}
 
-
-          if(node.matrix) {
+          if (node.matrix) {
             this.dragging = node.matrix;
             this.draggingTransorm = {x: this.mouseX - node.matrix.x, y: this.mouseY - node.matrix.y}
           }
 
         } else {
           let node = this.getHoveringNode(this.mouseX, this.mouseY);
-            if (node && node.delete) {
-              this.delete(node.m)
-            }
-
+          if (node && node.delete) {
+            this.delete(node.m)
+          }
         }
-
       }
-
-
-
-
     }
-
   }
 
   zoompan(event) {
-    if(!this.dragging && !this.interacting) {
+    if (!this.dragging && !this.interacting) {
       this.transform = event.transform;
     } else {
       let canvas = document.querySelector('#canvas');
       let coords = this.getMousePos(canvas, event.sourceEvent);
-      let invertedScale = 1/ this.transform.k
+      let invertedScale = 1 / this.transform.k
       this.mouseX = invertedScale * coords.x - invertedScale * this.transform.x;
       this.mouseY = invertedScale * coords.y - invertedScale * this.transform.y;
       if (this.interacting) {
         this.lassoPoints.push({x: this.mouseX, y: this.mouseY});
-        this.renderLasso( this.lassoPoints);
+        this.renderLasso(this.lassoPoints);
 
       }
     }
@@ -339,7 +307,7 @@ class NodeTrix {
 
   zoomend(event) {
 
-    if(this.dragging || this.interacting) {
+    if (this.dragging || this.interacting) {
       event.transform.x = this.oldTransform.x;
       event.transform.y = this.oldTransform.y;
     } else {
@@ -348,7 +316,7 @@ class NodeTrix {
     }
     this.dragging = null;
 
-    if(this.interacting) {
+    if (this.interacting) {
       this.interacting = false;
       this.lassoPoints.push(this.lassoStart);
       this.lassoSelect();
@@ -360,25 +328,24 @@ class NodeTrix {
 
 
   gotoNode(node) {
-    if(node.visualNode.currentMatrix) {
-      this.transform.x = (node.visualNode.currentMatrix.x * this.transform.k - this.w/2) * -1;
-      this.transform.y = (node.visualNode.currentMatrix.y * this.transform.k - this.h/2) * -1;
+    if (node.visualNode.currentMatrix) {
+      this.transform.x = (node.visualNode.currentMatrix.x * this.transform.k - this.w / 2) * -1;
+      this.transform.y = (node.visualNode.currentMatrix.y * this.transform.k - this.h / 2) * -1;
     } else {
-      this.transform.x = (node.visualNode.x * this.transform.k - this.w/2) * -1;
-      this.transform.y = (node.visualNode.y * this.transform.k - this.h/2) * -1;
+      this.transform.x = (node.visualNode.x * this.transform.k - this.w / 2) * -1;
+      this.transform.y = (node.visualNode.y * this.transform.k - this.h / 2) * -1;
     }
   }
-
 
 
   hoverCluster(cluster) {
     this.unhover();
     this.logicalGraph.nodes2.forEach(node => {
-      if(node.cluster === cluster) {
+      if (node.cluster === cluster) {
         node.visualNode.hovered = true;
         this.hoveredNodes.push(node.visualNode);
       }
-    });
+    });x
     this.clustersView.hoverCluster(cluster);
   }
 
@@ -386,14 +353,14 @@ class NodeTrix {
 
     this.unhover();
 
-    if('rowNode' in node) {
+    if ('rowNode' in node) {
       node.matrix.matrix.hover(node.rowNode, node.columnNode);
       this.clustersView.hoverCluster(node.rowNode.cluster);
       this.clustersView.hoverCluster(node.columnNode.cluster);
       this.clustersView.hoverNode(node.rowNode);
       this.clustersView.hoverNode(node.columnNode);
     } else {
-      if(node.hidden) {
+      if (node.hidden) {
         node.currentMatrix.matrix.hoverNode(node);
       }
       this.clustersView.hoverCluster(node.cluster);
@@ -405,9 +372,9 @@ class NodeTrix {
   }
 
   unhover() {
-    this.hoveredNodes.forEach( node => {
+    this.hoveredNodes.forEach(node => {
       node.hovered = false;
-      if('rowNode' in node) {
+      if ('rowNode' in node) {
         node.matrix.matrix.unhover();
       }
     });
@@ -424,7 +391,7 @@ class NodeTrix {
 
   selectCluster(cluster) {
     this.logicalGraph.nodes2.forEach(node => {
-      if(node.cluster === cluster && !node.visualNode.selected) {
+      if (node.cluster === cluster && !node.visualNode.selected) {
         node.visualNode.selected = true;
         this.selectedNodes.push(node.visualNode);
       }
@@ -436,10 +403,10 @@ class NodeTrix {
 
   selectNode(node) {
 
-    if('rowNode' in node) {
+    if ('rowNode' in node) {
       node.matrix.matrix.update(false, null);
 
-      if(!node.rowNode.selected) {
+      if (!node.rowNode.selected) {
         node.rowNode.selected = true;
         this.selectedNodes.push(node.rowNode);
       } else {
@@ -448,8 +415,8 @@ class NodeTrix {
       }
 
 
-      if(node.rowNode !== node.columnNode) {
-        if(!node.columnNode.selected) {
+      if (node.rowNode !== node.columnNode) {
+        if (!node.columnNode.selected) {
           node.columnNode.selected = true;
           this.selectedNodes.push(node.columnNode);
         } else {
@@ -459,7 +426,7 @@ class NodeTrix {
       }
 
     } else {
-      if(!node.selected) {
+      if (!node.selected) {
         node.selected = true;
         this.selectedNodes.push(node);
       } else {
@@ -469,14 +436,11 @@ class NodeTrix {
       this.clustersView.selectNode(node);
     }
 
-    this.viewmatrix.forEach(function (matrix) {
-      //matrix.update();
-    });
     this.hideOrShowSelectionTools();
   }
 
   unselect() {
-    this.selectedNodes.forEach( node => {
+    this.selectedNodes.forEach(node => {
       node.selected = false;
     });
     this.selectedNodes.splice(0, this.selectedNodes.length);
@@ -487,8 +451,8 @@ class NodeTrix {
 
   unselectCluster(cluster) {
     let nodesToRemove = [];
-    this.selectedNodes.forEach( node => {
-      if(node.cluster === cluster) {
+    this.selectedNodes.forEach(node => {
+      if (node.cluster === cluster) {
         node.selected = false;
         nodesToRemove.push(node);
       }
@@ -504,14 +468,14 @@ class NodeTrix {
   lassoSelect() {
     let _this = this;
     this.logicalGraph.nodes2.forEach(function (node) {
-      if (_this.lassoPoints.length <= 1){
+      if (_this.lassoPoints.length <= 1) {
         return;
       }
 
       let intersectionCount = 0;
-      for (let i = 1; i < _this.lassoPoints.length; i++){
+      for (let i = 1; i < _this.lassoPoints.length; i++) {
 
-        let start = _this.lassoPoints[i-1];
+        let start = _this.lassoPoints[i - 1];
         let end = _this.lassoPoints[i];
         let line = {start: start, end: end};
 
@@ -550,29 +514,20 @@ class NodeTrix {
 
         intersectionCount++;
       }
-      /*
-            if (intercessionCount === 0) {
-              seat.selected = false;
-              return;
-            }*/
-      if(intersectionCount & 1 && !node.visualNode.hidden){
-        //    seat.selected = true;
+
+      if (intersectionCount & 1 && !node.visualNode.hidden) {
         _this.selectNode(node.visualNode);
-      } else {
-        //  seat.selected = false;
       }
-
-
     });
 
 
   }
 
   hideOrShowSelectionTools() {
-    if(this.selectedNodes.length === 0) {
-      document.getElementById("selectiontools").style.top="-4rem";
+    if (this.selectedNodes.length === 0) {
+      document.getElementById("selectiontools").style.top = "-4rem";
     } else {
-      document.getElementById("selectiontools").style.top="0.1rem";
+      document.getElementById("selectiontools").style.top = "0.1rem";
     }
   }
 
@@ -582,23 +537,23 @@ class NodeTrix {
 
 
     let nodeData = this.data.colorToNode.get(colKey);
-    if(nodeData && col[3] === 255 && !nodeData.hidden) {
+    if (nodeData && col[3] === 255 && !nodeData.hidden) {
       return nodeData;
     }
 
     nodeData = this.colorToMatrixCell.get(colKey);
 
-    if(nodeData && col[3] === 255) {
+    if (nodeData && col[3] === 255) {
       let rowNode = nodeData.rowNode;
       let columnNode = nodeData.columnNode;
       let matrix = this.colorToMatrix.get(colKey);
 
-      return {matrix: matrix, rowNode: rowNode, columnNode:columnNode};
+      return {matrix: matrix, rowNode: rowNode, columnNode: columnNode};
     }
 
     nodeData = this.colorToDeleteMatrix.get(colKey);
 
-    if(nodeData && col[3] === 255) {
+    if (nodeData && col[3] === 255) {
       return {delete: true, m: nodeData};
     }
 
@@ -612,18 +567,6 @@ class NodeTrix {
     };
   }
 
-  getTransformedPoint(x, y) {
-    const transform = this.transform;
-    const invertedScaleX = 1 / transform.k;
-    const invertedScaleY = 1 / transform.k;
-
-    const transformedX = x * invertedScaleX;
-    const transformedY = y * invertedScaleY;
-
-    return { x: transformedX, y: transformedY };
-  }
-
-
   step() {
     let _this = this;
     this.context.clearRect(0, 0, this.w, this.h);
@@ -632,21 +575,19 @@ class NodeTrix {
     this.context.translate(this.transform.x, this.transform.y);
     this.context.scale(this.transform.k, this.transform.k);
 
-    //this.hiddenContext.clearRect(0, 0, this.w, this.h);
-
-    this.logicalGraph.links2.forEach( link => {
-      if(link.visualLink.hidden) {
+    this.logicalGraph.links2.forEach(link => {
+      if (link.visualLink.hidden) {
         return;
       }
       _this.context.beginPath();
       _this.drawLink(link);
-      if(link.visualLink.sourceNode.selected || link.visualLink.targetNode.selected) {
+      if (link.visualLink.sourceNode.selected || link.visualLink.targetNode.selected) {
         _this.context.strokeStyle = "rgba(220, 25, 25, 0.8)";
-      } else if(link.visualLink.sourceNode.hovered || link.visualLink.targetNode.hovered) {
+      } else if (link.visualLink.sourceNode.hovered || link.visualLink.targetNode.hovered) {
         _this.context.strokeStyle = "rgba(200, 200, 0, 0.8)";
-      } else if(_this.hoveredNodes.length > 0 && !link.visualLink.sourceNode.hovered && !link.visualLink.targetNode.hovered) {
+      } else if (_this.hoveredNodes.length > 0 && !link.visualLink.sourceNode.hovered && !link.visualLink.targetNode.hovered) {
         _this.context.strokeStyle = 'rgba(100, 100, 100, 0.45)';
-      } else if(_this.selectedNodes.length > 0 && !link.visualLink.sourceNode.selected && !link.visualLink.targetNode.selected) {
+      } else if (_this.selectedNodes.length > 0 && !link.visualLink.sourceNode.selected && !link.visualLink.targetNode.selected) {
         _this.context.strokeStyle = 'rgba(0, 0, 0, 0.65)';
       } else {
         _this.context.strokeStyle = 'rgba(0, 0, 0, 0.9)';
@@ -664,19 +605,18 @@ class NodeTrix {
     this.context.translate(this.transform.x, this.transform.y);
     this.context.scale(this.transform.k, this.transform.k);
     this.logicalGraph.nodes2.forEach(node => {
-      if(node.visualNode.hidden) {
+      if (node.visualNode.hidden) {
         return;
       }
-     // let visualNode = _this.visualGraph.nodes.get(node.name);
       _this.context.beginPath();
       _this.drawNode(node.visualNode, _this.context)
-      if(_this.clusters[node.cluster]) {
+      if (_this.clusters[node.cluster]) {
 
         if (node.visualNode.selected) {
           _this.context.fillStyle = _this.clusters[node.cluster].color;
-        } else if(_this.hoveredNodes.length > 0 && !node.visualNode.hovered) {
+        } else if (_this.hoveredNodes.length > 0 && !node.visualNode.hovered) {
           _this.context.fillStyle = hexToRgba(_this.clusters[node.cluster].color, 0.7);
-        } else if(_this.selectedNodes.length > 0 && !node.visualNode.selected) {
+        } else if (_this.selectedNodes.length > 0 && !node.visualNode.selected) {
           _this.context.fillStyle = hexToRgba(_this.clusters[node.cluster].color, 1);
         } else {
           _this.context.fillStyle = _this.clusters[node.cluster].color;
@@ -692,10 +632,10 @@ class NodeTrix {
       } else if (node.visualNode.hovered) {
         _this.context.strokeStyle = _this.cfg.general.hoverColor;
         _this.context.lineWidth = 3;
-      } else if(_this.hoveredNodes.length > 0 && !node.visualNode.hovered) {
+      } else if (_this.hoveredNodes.length > 0 && !node.visualNode.hovered) {
         _this.context.strokeStyle = "rgba(0, 0, 0, 0.45)";
         _this.context.lineWidth = 1;
-      } else if(_this.selectedNodes.length > 0 && !node.visualNode.selected) {
+      } else if (_this.selectedNodes.length > 0 && !node.visualNode.selected) {
         _this.context.strokeStyle = "rgba(0, 0, 0, 0.65)";
         _this.context.lineWidth = 1;
       } else {
@@ -703,13 +643,12 @@ class NodeTrix {
         _this.context.lineWidth = 1;
       }
 
-
       _this.context.fill();
       _this.context.stroke();
     });
 
     this.logicalGraph.nodes2.forEach(node => {
-      if(node.visualNode.hidden) {
+      if (node.visualNode.hidden) {
         return;
       }
       _this.drawLabel(node.visualNode, _this.context)
@@ -720,23 +659,14 @@ class NodeTrix {
     this.renderLasso(this.lassoPoints);
 
 
-
-    if(_this.dragging) {
+    if (_this.dragging) {
       _this.dragging.x = _this.mouseX - _this.draggingTransorm.x;
       _this.dragging.y = _this.mouseY - _this.draggingTransorm.y;
       _this.simulation.alpha(0.1).restart();
     }
 
-    //this.viewmatrix.forEach(function (d) {
-     // d.nodeSize = d.cluster.length * _this.cfg.matrix.cellSize;
-      //d.width = d.nodeSize + _this.cfg.matrix.margin;
-      //d.height = d.nodeSize + _this.cfg.matrix.margin;
-
-   // });
-
     window.requestAnimationFrame(this.step.bind(this));
   }
-
 
 
   hiddenStep() {
@@ -761,10 +691,9 @@ class NodeTrix {
     });
   }
 
-
   renderLasso(points) {
 
-    if (points.length <= 1){
+    if (points.length <= 1) {
       return;
     }
 
@@ -772,17 +701,16 @@ class NodeTrix {
     this.context.translate(this.transform.x, this.transform.y);
     this.context.scale(this.transform.k, this.transform.k);
 
-    this.context.setLineDash([5,3]);
+    this.context.setLineDash([5, 3]);
     this.context.strokeStyle = 'black';
     this.context.fillStyle = 'rgba(0,0,0,0.2)';
     this.context.lineWidth = 1;
     this.context.beginPath();
-    for (let index = 0; index < points.length; index ++){
+    for (let index = 0; index < points.length; index++) {
       let point = points[index];
-      if (index === 0){
+      if (index === 0) {
         this.context.moveTo(point.x, point.y);
-      } else
-      {
+      } else {
         this.context.lineTo(point.x, point.y);
       }
     }
@@ -812,7 +740,6 @@ class NodeTrix {
 
     context.moveTo(nodeX + d.radius, nodeY);
     context.arc(nodeX, nodeY, d.radius, 0, 2 * Math.PI);
-  //  context.attr('fillStyleHidden', d.hiddenColor);
 
   }
 
@@ -823,9 +750,9 @@ class NodeTrix {
       context.fillStyle = "rgba(220, 25, 25, 1)";
     } else if (d.hovered) {
       context.fillStyle = "rgba(200, 200, 0, 1)";
-    } else if(this.hoveredNodes.length > 0 && !d.hovered) {
+    } else if (this.hoveredNodes.length > 0 && !d.hovered) {
       context.fillStyle = "rgba(0, 0, 0, 0.45)";
-    } else if(this.selectedNodes.length > 0 && !d.selected) {
+    } else if (this.selectedNodes.length > 0 && !d.selected) {
       context.fillStyle = "rgba(0, 0, 0, 0.65)";
     } else {
       context.fillStyle = '#000000'
@@ -840,103 +767,46 @@ class NodeTrix {
   calculateCircling(d) {
     let nodeX = d.x;
     let nodeY = d.y;
-    if(d.isNew && this.highlightNew) {
+    if (d.isNew && this.highlightNew) {
       nodeX = d.x + Math.cos(this.circlingAngle) * this.circlingRadius;
       nodeY = d.y + Math.sin(this.circlingAngle) * this.circlingRadius;
-    } else if(d.willGo && this.highlightLeaving) {
+    } else if (d.willGo && this.highlightLeaving) {
       nodeX = d.x + Math.cos(-1 * this.circlingAngle) * this.circlingRadius;
       nodeY = d.y + Math.sin(-1 * this.circlingAngle) * this.circlingRadius;
     }
-    return {x: nodeX, y:nodeY};
+    return {x: nodeX, y: nodeY};
   }
 
   setTimeSlice(newTimeSlice) {
 
     this.unselect();
-
     let _this = this;
-    let matrices = [];
-    let matrixCoords = [];
 
-
-
-    for (let i = 0; i < this.viewmatrix.length; i++) {
-      //matrices.push(this.viewmatrix[i].cluster);
-     // matrixCoords.push({x: this.viewmatrix[i].xPos, y: this.viewmatrix[i].yPos})
-    }
-/*
-    for (let i = this.viewmatrix.length - 1; i >= 0; i--) {
-      this.delete(this.viewmatrix[i]);
-    }
-*/
     this.data.timeslices[newTimeSlice].nodes2.forEach(function (node) {
-      if(!_this.logicalGraph.nodes2.has(node.id)) {
-        node.visualNode.isNew = true;
-      } else {
-        node.visualNode.isNew = false;
-      }
-
-      if(_this.data.timeslices[newTimeSlice + 1] && !_this.data.timeslices[newTimeSlice + 1].nodes2.has(node.id)) {
-        node.visualNode.willGo = true;
-      } else {
-        node.visualNode.willGo = false;
-      }
+      node.visualNode.isNew = !_this.logicalGraph.nodes2.has(node.id);
+      node.visualNode.willGo = _this.data.timeslices[newTimeSlice + 1] && !_this.data.timeslices[newTimeSlice + 1].nodes2.has(node.id);
     });
 
     this.logicalGraph = this.data.timeslices[newTimeSlice];
-/*
-    this.visualGraph.nodes.forEach(function (n) {
-      n.invisible = !getNodeById(_this.logicalGraph.nodes, n.id);
-    });
-*/
-/*
-    this.visualGraph.links.forEach(function (link, i) {
-      link.sourceNode = getNodeById(_this.visualGraph.nodes, link.source);
-      link.targetNode = getNodeById(_this.visualGraph.nodes, link.target);
-      link.invisible = !(getNodeById(_this.logicalGraph.nodes, link.sourceNode.id)
-        && getNodeById(_this.logicalGraph.nodes, link.targetNode.id));
-    });
-*/
-
 
     this.visualGraph.links.forEach(function (link, i) {
-      if(!_this.logicalGraph.links2.has(link.source + "-" + link.target)) {
-        link.invisible = true;
-      } else {
-        link.invisible = false;
-      }
+      link.invisible = !_this.logicalGraph.links2.has(link.source + "-" + link.target);
     });
 
     this.viewbridges.forEach(function (bridge, i) {
       let source = bridge.originalSource ? bridge.originalSource.id : bridge.source;
       let target = bridge.originalTarget ? bridge.originalTarget.id : bridge.target;
 
-      if(!_this.logicalGraph.links2.has(source + "-" + target)) {
-        bridge.invisible = true;
-      } else {
-        bridge.invisible = false;
-      }
+      bridge.invisible = !_this.logicalGraph.links2.has(source + "-" + target);
     });
 
     this.update(0.1);
 
     this.updateClustering(this.clusteringView.getClustering());
 
-/*
-    while (matrices.length > 0) {
-      let matrix = matrices.pop();
-      let pos = matrixCoords.pop();
-      let invalidNodes = getInvalidNodes(_this.logicalGraph, matrix);
-
-      this.createMatrix(matrix, invalidNodes, pos.x, pos.y);
-    }
-*/
-
     for (let i = 0; i < this.viewmatrix.length; i++) {
       this.viewmatrix[i].setTimeSlice();
     }
-
-
 
   }
 
@@ -960,7 +830,6 @@ class NodeTrix {
         if (n.yPos) n.y = n.yPos;
 
 
-
       } else {
         n.charge = _this.cfg.node.charge;
         //n.radius = _this.cfg.node.radius;
@@ -974,7 +843,7 @@ class NodeTrix {
     });
 
     this.visualGraph.links.forEach(function (n) {
-      n.distance = (n.sourceNode.radius + n.targetNode.radius) * _this.cfg.link.distance ;
+      n.distance = (n.sourceNode.radius + n.targetNode.radius) * _this.cfg.link.distance;
       if (n.invisible) {
 
         n.distance *= 1.1
@@ -982,18 +851,18 @@ class NodeTrix {
     });
 
     this.viewmatrix.forEach(function (matrix) {
-     // matrix.nodeSize = matrix.cluster.length * _this.cfg.matrix.cellSize;
+      // matrix.nodeSize = matrix.cluster.length * _this.cfg.matrix.cellSize;
       matrix.height = matrix.nodeSize + _this.cfg.matrix.margin;
     });
 
-/*
-    this.visualGraph.links.forEach(function (n, i) {
-      n.invisible = !getLinkById(_this.logicalGraph.links, n.id);
-      if (n.invisible) {
-        n.value = 0.85;
-      }
-    });
-*/
+    /*
+        this.visualGraph.links.forEach(function (n, i) {
+          n.invisible = !getLinkById(_this.logicalGraph.links, n.id);
+          if (n.invisible) {
+            n.value = 0.85;
+          }
+        });
+    */
     this.updateNodes(this.visualGraph.nodes);
     this.updateLinks(this.visualGraph.links);
 
@@ -1018,9 +887,9 @@ class NodeTrix {
 
     this.clustersView.update(this.logicalGraph, this.clusteringController.getCurrentClusters(this.logicalGraph, clustering), this.logicalGraph.nodes2, this.clusters);
     this.updateNodes(this.visualGraph.nodes);
-   /* this.viewmatrix.forEach(function (nodetrix) {
+    this.viewmatrix.forEach(function (nodetrix) {
       nodetrix.matrix.update(false);
-    });*/
+    });
 
 
   }
@@ -1031,245 +900,16 @@ class NodeTrix {
     this.viewmatrix.forEach(function (matrix) {
       matrix.matrix.update(false, _this.transform);
     });
-
-/*
-    this.matrix = this.matrix
-      .data(matrices, d => d.id)
-      .join(
-        enter => enter.append("g")
-          .attr("class", "matrix")
-          .each(function (nodetrix) {
-            let matrix = new Matrix(d3.select(this), _this.cfg);
-            let submatrix = nodetrix.getSubmatrix();
-            matrix.setup(submatrix, [], _this.reorderingView.getReordering(), _this.clusters, _this.reorderingController);
-            nodetrix.matrix = matrix;
-          })
-      );
-    this.matrix.transition().style("opacity", 1);
-    this.matrix.exit().remove();
-
-    this.viewmatrix.forEach(function (nodetrix) {
-      nodetrix.matrix.update(false);
-    });
-    */
-
   }
 
   updateNodes(nodes) {
-
-    let _this = this;
-
-
-/*
-    const old = new Map(this.node.data().map(d => [d.id, d]));
-    nodes = nodes.map(d => Object.assign(old.get(d.id) || {}, d));
-
-    this.node = this.node
-      .data(nodes, d => d.id)
-      .join(
-        enter => enter.append(function (d) {
-          return document.createElementNS("http://www.w3.org/2000/svg", ("subgraph" in d) ? "rect" : "circle");
-        })
-          .style("opacity", 0)
-          .attr("fill", function (d) {
-            if ("subgraph" in d) {
-              return "#000";
-            }
-            return _this.clusters[d.cluster].color
-          }),
-        update => update
-          .attr("fill", function (d) {
-            if ("subgraph" in d) {
-              return "#000";
-            }
-            return _this.clusters[d.cluster].color
-          }),
-        exit => exit
-          .call(exit => exit.remove())
-      )
-      .attr("class", "node");
-
-    this.text = this.text
-      .data(nodes, d => d.id)
-      .join(
-        enter => enter.append("text"),
-        update => update,
-        exit => exit
-          .call(exit => exit.remove())
-      )
-      .attr("class", "label")
-      .attr("x", "1em")
-      .attr("y", ".30em")
-      .text(d => d.name);
-
-*/
- //   this.matrixDragHandler.setNodes(this.svg.selectAll('.matrix'));
-  //  this.dragHandler.setNodes(this.node);
     this.simulation.nodes(nodes);
-
-
   }
 
   updateLinks(links) {
-
-    let _this = this;
     links = links.map(d => Object.assign({}, d));
-/*
-    links.forEach(function (link) {
-      link.strength = _this.cfg.link.strength;
-      link.distance = _this.cfg.link.distance;
-    });
-
- */
-    /*
-
-    // since bridges are just visual, for every bridge we add one invisible link to the graph
-    this.viewbridges.forEach(function (bridge) {
-      if (bridge.originalSource && bridge.originalTarget) {
-        return;
-      }
-      let newLink = {
-        id: 1000000 + idFactory.get("invLink"),
-        source: (bridge.originalSource ? bridge.sourceNode.id : bridge.targetNode.id),
-        target: (bridge.originalSource ? bridge.target : bridge.source),
-        strength: _this.cfg.link.bridgeStrength,
-        distance: 200,
-        invisible: true,
-        value: 0.85
-      };
-      newLink.distance =  (bridge.originalSource ? bridge.sourceNode.radius : bridge.targetNode.radius) + _this.cfg.matrix.margin;
-      links.push(newLink);
-    });
-
-    this.link = this.link
-      .data(links, d => (d.source.id + "-" + d.target.id))
-      .join(enter => enter.append("line"),
-        update => update,
-        exit => exit
-          .call(exit => exit.remove())
-      );
-
-    this.bridge = this.bridge
-      .data(this.viewbridges, d => d.id)
-      .join(
-        enter => enter.append("svg:path")
-          .attr("class", "bridge"),
-        update => update,
-        exit => exit
-          .call(exit => exit.remove())
-      );*/
-
     this.simulation.force("link").links(links).strength(l => l.value);
-
   }
-
-  copyNodeProperties(d) {
-    const node = getNodeById(this.visualGraph.nodes, d.id);
-    if (node) {
-      node.xPos = d.x;
-      node.yPos = d.y;
-      d.highlighted = node.highlighted;
-      d.invisible = node.invisible;
-      d.radius = node.radius;
-      d.charge = node.charge;
-    }
-
-
-  }
-
-  ticked() {
-    /*
-    let _this = this;
-
-    this.node.each(d => this.copyNodeProperties(d));
-
-    this.node.attr("cx", d => d.x)
-      .attr("cy", d => d.y)
-      .attr("r", d => d.radius)
-      .style("stroke", function (d) {
-        if (d.highlighted) {
-          return _this.cfg.node.strokeHighlighted;
-        }
-        return _this.cfg.node.stroke;
-      })
-      .style("visibility", function (d) {
-        if (d.invisible) {
-          return "hidden";
-        }
-      })
-      .style("stroke-width", _this.cfg.node.strokeWidth);
-
-
-    this.text.attr("dx", d => d.x)
-      .attr("dy", d => d.y)
-      .style("visibility", function (d) {
-        if (d.invisible) {
-          return "hidden";
-        }
-      })
-
-    this.link.attr("x1", d => d.source.x)
-      .attr("y1", d => d.source.y)
-      .attr("x2", d => d.target.x)
-      .attr("y2", d => d.target.y)
-      .style("stroke", _this.cfg.link.stroke)
-      .style("stroke-width", function (d) {
-        if (d.invisible) {
-          return 0;
-        }
-        return _this.cfg.link.strokeWidth;
-      });
-
-    this.viewmatrix.forEach(function (d) {
-      d.nodeSize = d.cluster.length * _this.cfg.matrix.cellSize;
-      d.width = d.nodeSize + _this.cfg.matrix.margin;
-      d.height = d.nodeSize + _this.cfg.matrix.margin;
-      d.matrix.render();
-    });
-
-    let matAttr = [];
-
-    this.matrix.attr("transform", function (d) {
-      let pos = !isNaN(d.xPos) && !isNaN(d.yPos) ? "translate(" + (d.xPos - d.nodeSize / 2.0) + "," + (d.yPos - d.nodeSize / 2.0) + ")" : "translate(0,0)"
-      matAttr[d.id] = {
-        pos: pos,
-        width: _this.cfg.matrix.cellStrokeWidth + _this.cfg.matrix.cellSize * d.matrix.submatrix.length,
-        height: _this.cfg.matrix.cellStrokeWidth + _this.cfg.matrix.cellSize * d.matrix.submatrix.length
-      };
-      return pos;
-    });
-
-    this.node.attr("transform", function (d) {
-      if (!("subgraph" in d)) {
-        return "translate(0,0)";
-      }
-      return matAttr[d.id].pos;
-    }).attr("width", function (d) {
-      if (!("subgraph" in d)) {
-        return "0";
-      }
-      return matAttr[d.id].width;
-    }).attr("height", function (d) {
-      if (!("subgraph" in d)) {
-        return "0";
-      }
-      return matAttr[d.id].height;
-    }).style("stroke-width", function (d) {
-      if (!("subgraph" in d)) {
-        return _this.cfg.node.strokeWidth;
-      }
-      return 0;
-    }).style("opacity", function (d) {
-      if (!("subgraph" in d)) {
-        return 1;
-      }
-      return 0;
-    });
-
-*/
-
-  }
-
 
   createMatrix(cluster, invalidNodes, x, y) {
 
@@ -1285,7 +925,15 @@ class NodeTrix {
 
     let invisivleNodesId = 0;
 
-    let tempNode = {id: invisivleNodesId++, name: "test", hiddenColor: null, links:[], x: loc.x, y: loc.y, tempradius: this.cfg.matrix.cellSize * cluster.length}
+    let tempNode = {
+      id: invisivleNodesId++,
+      name: "test",
+      hiddenColor: null,
+      links: [],
+      x: loc.x,
+      y: loc.y,
+      tempradius: this.cfg.matrix.cellSize * cluster.length
+    }
 
     let nodeMatrix = {
       links: [],
@@ -1326,7 +974,7 @@ class NodeTrix {
           iIndex++;
         });
         this.subgraph.links.forEach(function (link) {
-          if(!link.invisible) {
+          if (!link.invisible) {
             let source = link.sourceNode.id;
             let target = link.targetNode.id;
             if (source < 0 || target < 0) throw "Linking error: from " + source + " to " + target;
@@ -1341,7 +989,7 @@ class NodeTrix {
         let leavingNodes = [];
 
         this.cluster.forEach(function (nodeId) {
-          if(!_this.logicalGraph.nodes2.has(nodeId)) {
+          if (!_this.logicalGraph.nodes2.has(nodeId)) {
             leavingNodes.push(nodeId);
           }
         });
@@ -1349,7 +997,7 @@ class NodeTrix {
         this.matrix.setTimeslice(leavingNodes, _this.logicalGraph);
 
         this.nodeSize = cluster.length * _this.cfg.matrix.cellSize,
-        this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
+          this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
         this.height = cluster.length * _this.cfg.matrix.cellSize + 10;
       }
     };
@@ -1361,14 +1009,14 @@ class NodeTrix {
 
     for (let i = 0; i < cluster.length; i++) {
       let node;
-      if(this.logicalGraph.nodes2.has(cluster[i])) {
+      if (this.logicalGraph.nodes2.has(cluster[i])) {
         node = this.logicalGraph.nodes2.get(cluster[i]).visualNode;
         node.selected = false;
       } else {
-       // node = {id: invisivleNodesId++, name: "test", hiddenColor: null, links:[], greyed: true}
+        // node = {id: invisivleNodesId++, name: "test", hiddenColor: null, links:[], greyed: true}
       }
 
-      if(!node.greyed) {
+      if (!node.greyed) {
         nodesToRemove.push(node);
       }
 
@@ -1394,11 +1042,10 @@ class NodeTrix {
             nodeMatrix.subgraph.links.set(edge.id, edge);
 
 
-
           }
         } else {
-          let tempSource =  edge.sourceNode;
-          let tempTarget =  edge.targetNode;
+          let tempSource = edge.sourceNode;
+          let tempTarget = edge.targetNode;
           if (cluster.includes(edge.sourceNode.id) && !cluster.includes(edge.targetNode.id)) {
             edge.originalSource = edge.sourceNode;
             edge.sourceNode = nodeMatrix;
@@ -1411,23 +1058,27 @@ class NodeTrix {
             edge.target = nodeMatrix.id;
             tempTarget = tempNode;
           }
-/*t
-          // only actually draw bridge if both nodes are present in this time slice and the edge was not invisible in the first place
-          edge.invisible = !(('subgraph' in edge.sourceNode || getNodeById(this.logicalGraph.nodes, edge.sourceNode.id))
-            && ('subgraph' in edge.targetNode || getNodeById(this.logicalGraph.nodes, edge.targetNode.id)))
-            || edge.invisible;*/
-
 
           if (this.visualGraph.links.includes(edge)) {
-          //  edgesToRemove.push(edge);
+            //  edgesToRemove.push(edge);
             edge.hidden = true;
           }
 
           if (!this.viewbridges.includes(edge)) {
             this.viewbridges.push(edge);
 
-            let tempLink = {id: edge.id, temp: true, sourceNode: tempSource, targetNode: tempTarget, source: tempSource.id, target: tempTarget.id, hidden: true, invisible: true, value: 1}
-           // this.visualGraph.links.push(tempLink)
+            let tempLink = {
+              id: edge.id,
+              temp: true,
+              sourceNode: tempSource,
+              targetNode: tempTarget,
+              source: tempSource.id,
+              target: tempTarget.id,
+              hidden: true,
+              invisible: true,
+              value: 1
+            }
+            // this.visualGraph.links.push(tempLink)
           }
 
           nodeMatrix.links.push(edge);
@@ -1435,7 +1086,7 @@ class NodeTrix {
       }
     }
 
-   // this.visualGraph.nodes.push(tempNode);
+    // this.visualGraph.nodes.push(tempNode);
 
     while (edgesToRemove.length > 0) {
       let edgeToRemove = edgesToRemove.pop();
@@ -1462,7 +1113,6 @@ class NodeTrix {
     this.colorToDeleteMatrix.set(nodeMatrix.deleteHiddenColor, nodeMatrix);
 
 
-
     return nodeMatrix;
 
 
@@ -1479,7 +1129,7 @@ class NodeTrix {
 
     for (let k = 0; k < cluster.length; k++) {
       let node;
-      if(this.logicalGraph.nodes2.has(cluster[k])) {
+      if (this.logicalGraph.nodes2.has(cluster[k])) {
         node = this.logicalGraph.nodes2.get(cluster[k]).visualNode;
         clusterSize++;
       } else {
@@ -1515,17 +1165,6 @@ class NodeTrix {
     return {x: x, y: y};
   }
 
-  deleteAllWithNodes(nodes) {
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = 0; j < this.viewmatrix.length; j++) {
-
-        if (getNodeById(this.viewmatrix[j].subgraph.nodes, nodes[i])) {
-          this.delete(this.viewmatrix[j]);
-        }
-      }
-    }
-  }
-
   deleteAll() {
     while (this.viewmatrix.length > 0) {
       this.delete(this.viewmatrix[this.viewmatrix.length - 1]);
@@ -1540,6 +1179,7 @@ class NodeTrix {
 
     nodeMatrix.subgraph.nodes.forEach(function (d, i) {
       d.hidden = false;
+      delete d.currentMatrix;
       _this.visualGraph.nodes.push(d);
       delete _this.index[d.id];
     });
@@ -1555,7 +1195,7 @@ class NodeTrix {
         if (!('subgraph' in edge.targetNode)) {
           _this.viewbridges.splice(_this.viewbridges.indexOf(edge), 1);
           edge.hidden = false;
-         // _this.visualGraph.links.push(edge);
+          // _this.visualGraph.links.push(edge);
         }
       }
       if (edge.targetNode === nodeMatrix) {
@@ -1565,7 +1205,7 @@ class NodeTrix {
         if (!('subgraph' in edge.sourceNode)) {
           _this.viewbridges.splice(_this.viewbridges.indexOf(edge), 1);
           edge.hidden = false;
-        //  _this.visualGraph.links.push(edge);
+          //  _this.visualGraph.links.push(edge);
         }
       }
     });
