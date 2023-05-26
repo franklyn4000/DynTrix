@@ -345,7 +345,7 @@ class NodeTrix {
         node.visualNode.hovered = true;
         this.hoveredNodes.push(node.visualNode);
       }
-    });x
+    });
     this.clustersView.hoverCluster(cluster);
   }
 
@@ -477,7 +477,6 @@ class NodeTrix {
 
         let start = _this.lassoPoints[i - 1];
         let end = _this.lassoPoints[i];
-        let line = {start: start, end: end};
 
         let ray = {start: {x: node.visualNode.x, y: node.visualNode.y}, end: {x: 99999, y: 0}};
         let segment = {start: start, end: end};
@@ -789,11 +788,11 @@ class NodeTrix {
 
     this.logicalGraph = this.data.timeslices[newTimeSlice];
 
-    this.visualGraph.links.forEach(function (link, i) {
+    this.visualGraph.links.forEach(function (link) {
       link.invisible = !_this.logicalGraph.links2.has(link.source + "-" + link.target);
     });
 
-    this.viewbridges.forEach(function (bridge, i) {
+    this.viewbridges.forEach(function (bridge) {
       let source = bridge.originalSource ? bridge.originalSource.id : bridge.source;
       let target = bridge.originalTarget ? bridge.originalTarget.id : bridge.target;
 
@@ -822,7 +821,7 @@ class NodeTrix {
         let halfWidth = (n.matrix.submatrix.length / 2 + 1) * _this.cfg.matrix.cellSize * _this.cfg.matrix.radiusFactor
         n.radius = Math.sqrt(halfWidth * halfWidth + halfWidth * halfWidth)
         //n.radius = n.matrix.submatrix.length * Math.sqrt(2) / 2 * _this.cfg.matrix.cellSize + _this.cfg.matrix.cellSize * _this.cfg.matrix.radiusFactor;
-        n.subgraph.nodes.forEach(function (n2, i) {
+        n.subgraph.nodes.forEach(function (n2) {
           n2.charge = 0;
         });
 
@@ -872,7 +871,7 @@ class NodeTrix {
 
   updateOrdering(ordering) {
     let _this = this;
-    this.viewmatrix.forEach(function (d, i) {
+    this.viewmatrix.forEach(function (d) {
       d.matrix.setOrdering(ordering, _this.data);
     });
 
@@ -951,8 +950,6 @@ class NodeTrix {
       getSubmatrix: function () {
         let data = [];
         let obj = this;
-        let nm = this;
-
 
         let iIndex = 0;
         let jIndex = 0;
@@ -996,8 +993,8 @@ class NodeTrix {
 
         this.matrix.setTimeslice(leavingNodes, _this.logicalGraph);
 
-        this.nodeSize = cluster.length * _this.cfg.matrix.cellSize,
-          this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
+        this.nodeSize = cluster.length * _this.cfg.matrix.cellSize;
+        this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
         this.height = cluster.length * _this.cfg.matrix.cellSize + 10;
       }
     };
@@ -1060,25 +1057,11 @@ class NodeTrix {
           }
 
           if (this.visualGraph.links.includes(edge)) {
-            //  edgesToRemove.push(edge);
             edge.hidden = true;
           }
 
           if (!this.viewbridges.includes(edge)) {
             this.viewbridges.push(edge);
-
-            let tempLink = {
-              id: edge.id,
-              temp: true,
-              sourceNode: tempSource,
-              targetNode: tempTarget,
-              source: tempSource.id,
-              target: tempTarget.id,
-              hidden: true,
-              invisible: true,
-              value: 1
-            }
-            // this.visualGraph.links.push(tempLink)
           }
 
           nodeMatrix.links.push(edge);
@@ -1177,7 +1160,7 @@ class NodeTrix {
     this.visualGraph.nodes.splice(this.visualGraph.nodes.indexOf(nodeMatrix), 1);
     this.viewmatrix.splice(this.viewmatrix.indexOf(nodeMatrix), 1);
 
-    nodeMatrix.subgraph.nodes.forEach(function (d, i) {
+    nodeMatrix.subgraph.nodes.forEach(function (d) {
       d.hidden = false;
       delete d.currentMatrix;
       _this.visualGraph.nodes.push(d);
