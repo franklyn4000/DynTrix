@@ -559,3 +559,7 @@ label {
 .help:nth-child(2) {
   top: 1.5rem;
 }
+
+.help:nth-child(3) {
+  top: 3rem;
+}

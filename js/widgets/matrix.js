@@ -3,6 +3,7 @@ class Matrix {
   orderStore = null
   cfg = null;
   svg = null;
+  ordering = null;
 
   reorderingController = null;
 
@@ -29,8 +30,9 @@ class Matrix {
     this.hiddenContext = hiddenContext;
     this.transform = transform;
     this.orderStore = new OrderStore();
+    this.ordering = ordering;
 
-    this.setOrdering(ordering, null);
+   // this.setOrdering(ordering, null);
   }
 
 
@@ -225,7 +227,12 @@ class Matrix {
       let label = {};
 
 
-      label.name = _this.submatrix[i][i].node.name;
+      if(_this.ordering === "Volatility-Based") {
+        label.name = padString(_this.submatrix[i][i].volatility, 2) + " " + _this.submatrix[i][i].node.name;
+      } else {
+        label.name = _this.submatrix[i][i].node.name;
+      }
+
       label.color = _this.submatrix[i][i].labelColor;
       label.node = _this.submatrix[i][i].node;
 
@@ -349,7 +356,7 @@ class Matrix {
     this.context.scale(transform.k, transform.k);
     this.labels.forEach(function (label) {
 
-      _this.context.font = _this.cfg.matrix.cellSize + "px Arial";
+      _this.context.font = _this.cfg.matrix.cellSize + "px Consolas";
       _this.context.fillStyle = label.color;
       _this.context.fillText(label.name, label.x + xCenter + _this.cfg.matrix.cellSize/4, label.y + yCenter - 2);
       _this.context.translate(label.y + xCenter - _this.cfg.matrix.cellSize + 2, label.x + yCenter + _this.cfg.matrix.cellSize/4);
@@ -469,8 +476,10 @@ class Matrix {
   }
 
   setOrdering(ordering, graph) {
+    this.ordering = ordering;
     this.orderStore.order = (this.reorderingController.getOrdering(ordering, this.submatrix, graph));
     this.update(true, null);
+
   }
 
 }

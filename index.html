@@ -67,12 +67,16 @@
         <p class="label-like" >Hightlight changes</p>
         <div id="highlight" class="">
           <div>
-            <input id="setIncoming" type="checkbox">
+            <input id="setNone" type="radio" name="highlight" checked>
+            <label>None</label>
+          </div>
+          <div>
+            <input id="setIncoming" type="radio" name="highlight">
             <label>Incoming</label>
           </div>
           <div>
 
-            <input id="setOutgoing" type="checkbox">
+            <input id="setOutgoing" type="radio" name="highlight">
             <label>Outgoing</label>
           </div>
         </div>
@@ -99,6 +103,7 @@
   <main>
     <p class="help">Press X for lasso select</p>
     <p class="help">Press Shift to select by cluster</p>
+    <p class="help">Press Alt and click a node to unpin</p>
     <div id="selectiontools" class="">
       <button id="matrixButton">⊞</button>
       <button id="unselectButton">X</button>

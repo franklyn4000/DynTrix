@@ -41,6 +41,7 @@ class NodeTrix {
 
   shiftKeyPressed = false;
   lassoKeyPressed = false;
+  altKeyPressed = false;
 
   interacting = false;
 
@@ -107,12 +108,19 @@ class NodeTrix {
       _this.unselect();
     }
 
-    document.getElementById("setIncoming").onchange = function (event) {
-      _this.highlightNew = event.currentTarget.checked
+    document.getElementById("setNone").onclick = function (event) {
+      _this.highlightNew = false;
+      _this.highlightLeaving = false;
     }
 
-    document.getElementById("setOutgoing").onchange = function (event) {
-      _this.highlightLeaving = event.currentTarget.checked
+    document.getElementById("setIncoming").onclick = function (event) {
+      _this.highlightNew = true;
+      _this.highlightLeaving = false;
+    }
+
+    document.getElementById("setOutgoing").onclick = function (event) {
+      _this.highlightNew = false;
+      _this.highlightLeaving = true;
     }
 
     document.getElementById("unselectButton").onclick = function () {
@@ -125,6 +133,8 @@ class NodeTrix {
         _this.shiftKeyPressed = true;
       } else if (keyName === 'x') {
         _this.lassoKeyPressed = true;
+      } else if (keyName === 'Alt') {
+        _this.altKeyPressed = true;
       }
     }, false);
 
@@ -134,8 +144,12 @@ class NodeTrix {
         _this.shiftKeyPressed = false;
       } else if (keyName === 'x') {
         _this.lassoKeyPressed = false;
+      } else if (keyName === 'Alt') {
+        _this.altKeyPressed = false;
       }
     }, false);
+
+
 
 
     this.path = d3.geoPath().context(this.context);
@@ -258,16 +272,17 @@ class NodeTrix {
       } else {
         this.hiddenStep();
         let node = this.getHoveringNode(coords.x, coords.y);
-
         if (node) {
           if (node.delete) {
             this.delete(node.m)
             return;
           }
 
+
+
           if (this.shiftKeyPressed) {
             this.selectCluster(node.cluster);
-          } else {
+          } else if (!this.altKeyPressed)  {
             this.selectNode(node);
           }
           this.dragging = node;
@@ -278,6 +293,8 @@ class NodeTrix {
             this.draggingTransorm = {x: this.mouseX - node.matrix.x, y: this.mouseY - node.matrix.y}
           }
 
+          this.dragging.fx = null;
+          this.dragging.fy = null;
         } else {
           let node = this.getHoveringNode(this.mouseX, this.mouseY);
           if (node && node.delete) {
@@ -303,6 +320,7 @@ class NodeTrix {
 
       }
     }
+
   }
 
   zoomend(event) {
@@ -314,6 +332,17 @@ class NodeTrix {
       this.oldTransform.x = event.transform.x;
       this.oldTransform.y = event.transform.y;
     }
+
+    if(this.dragging && !this.altKeyPressed) {
+
+      console.log(this.dragging)
+
+      this.dragging.fx = this.dragging.x + this.dragging.vx;
+      this.dragging.fy = this.dragging.y + this.dragging.vy;
+    }
+
+
+
     this.dragging = null;
 
     if (this.interacting) {
@@ -745,7 +774,7 @@ class NodeTrix {
   }
 
   drawLabel(d, context) {
-    context.font = d.radius + "px Arial";
+    context.font = (d.radius + 3) + "px Consolas";
 
     if (d.selected) {
       context.fillStyle = "rgba(220, 25, 25, 1)";
@@ -1090,6 +1119,8 @@ class NodeTrix {
 
 
     nodeMatrix.matrix.setup(submatrix, nodeMatrix.links, null, _this.reorderingView.getReordering(), _this.clusters, _this.reorderingController, _this.context, _this.hiddenContext, _this.transform);
+
+    nodeMatrix.matrix.setOrdering( _this.reorderingView.getReordering(), _this.data);
 
     this.update(0.05);
 

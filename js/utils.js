@@ -287,3 +287,15 @@ function sortIntoMiddle(order) {
   return newOrder;
 
 }
+
+function padString(str, len) {
+  let string = str + "";
+  while(string.length < len) {
+    string += " ";
+  }
+  return string;
+}
+
+function clamp(x, lo, hi) {
+  return x < lo ? lo : x > hi ? hi : x;
+}

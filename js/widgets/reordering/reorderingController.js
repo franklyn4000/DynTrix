@@ -79,9 +79,6 @@ class ReorderingController {
         return {id:i, vol: 0};
       });
     });
-    console.log(subMatrix)
-    console.log(adjacency)
-    console.log(dynGraph)
 
     dynGraph.timeslices.forEach(function (slice){
       subMatrix.forEach(function (row, i){
@@ -131,6 +128,7 @@ class ReorderingController {
     dynGraph.timeslices.forEach(function (slice){
       subMatrix.forEach(function (row, i){
         order[i] = volatility[i][i];
+        subMatrix[i][i].volatility = volatility[i][i].vol;
       });
     });
     console.log(order)
