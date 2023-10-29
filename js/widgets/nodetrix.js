@@ -53,6 +53,8 @@ class NodeTrix {
   circlingRadius = 3;
   circlingSpeed = 12;
 
+  highlightNewEdge = false;
+  highlightLeavingEdge = false;
   highlightNew = false;
   highlightLeaving = false;
 
@@ -121,6 +123,16 @@ class NodeTrix {
     document.getElementById("setOutgoing").onclick = function (event) {
       _this.highlightNew = false;
       _this.highlightLeaving = true;
+    }
+
+    document.getElementById("setIncomingEdge").onclick = function (event) {
+      _this.highlightNewEdge = true;
+      _this.highlightLeavingEdge = false;
+    }
+
+    document.getElementById("setOutgoingEdge").onclick = function (event) {
+      _this.highlightNewEdge = false;
+      _this.highlightLeavingEdge = true;
     }
 
     document.getElementById("unselectButton").onclick = function () {
@@ -622,14 +634,13 @@ class NodeTrix {
       } else {
         _this.context.strokeStyle = 'rgba(0, 0, 0, 0.9)';
       }
-      _this.context.lineWidth = 1;
       _this.context.stroke();
     });
     this.context.restore();
     this.viewmatrix.forEach(matrix => {
 
 
-      matrix.matrix.draw(_this.transform, matrix.x, matrix.y);
+      matrix.matrix.draw(_this.transform, matrix.x, matrix.y, _this.circlingAngle);
     });
     this.context.save();
     this.context.translate(this.transform.x, this.transform.y);
@@ -755,6 +766,8 @@ class NodeTrix {
   drawLink(d) {
     let _this = this;
 
+    _this.context.lineWidth = this.highlightEdge(d.visualLink);
+
     let sourceCoords = this.calculateCircling(_this.logicalGraph.nodes2.get(d.source).visualNode);
     let targetCoords = this.calculateCircling(_this.logicalGraph.nodes2.get(d.target).visualNode);
 
@@ -763,6 +776,7 @@ class NodeTrix {
   }
 
   drawNode(d, context) {
+    let _this = this;
 
     let coords = this.calculateCircling(d);
     let nodeX = coords.x;
@@ -794,17 +808,26 @@ class NodeTrix {
     context.fillText(d.name, d.x + d.radius + 5, d.y + 2);
   }
 
+  highlightEdge(e) {
+    if((e.isNew && this.highlightNewEdge) || (e.willGo && this.highlightLeavingEdge))
+      return 4;
+    return 1;
+  }
+
   calculateCircling(d) {
     let nodeX = d.x;
     let nodeY = d.y;
+    let nodeStroke = 1;
     if (d.isNew && this.highlightNew) {
       nodeX = d.x + Math.cos(this.circlingAngle) * this.circlingRadius;
       nodeY = d.y + Math.sin(this.circlingAngle) * this.circlingRadius;
+      nodeStroke = 2;
     } else if (d.willGo && this.highlightLeaving) {
       nodeX = d.x + Math.cos(-1 * this.circlingAngle) * this.circlingRadius;
       nodeY = d.y + Math.sin(-1 * this.circlingAngle) * this.circlingRadius;
+      nodeStroke = 2;
     }
-    return {x: nodeX, y: nodeY};
+    return {x: nodeX, y: nodeY, stroke: nodeStroke};
   }
 
   setTimeSlice(newTimeSlice) {
@@ -815,6 +838,11 @@ class NodeTrix {
     this.data.timeslices[newTimeSlice].nodes2.forEach(function (node) {
       node.visualNode.isNew = !_this.logicalGraph.nodes2.has(node.id);
       node.visualNode.willGo = _this.data.timeslices[newTimeSlice + 1] && !_this.data.timeslices[newTimeSlice + 1].nodes2.has(node.id);
+    });
+
+    this.data.timeslices[newTimeSlice].links2.forEach(function (link) {
+      link.visualLink.isNew = !_this.logicalGraph.links2.has(link.source + "-" + link.target);
+      link.visualLink.willGo = _this.data.timeslices[newTimeSlice + 1] && !_this.data.timeslices[newTimeSlice + 1].links2.has(link.source + "-" + link.target);
     });
 
     this.logicalGraph = this.data.timeslices[newTimeSlice];

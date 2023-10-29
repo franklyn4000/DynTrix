@@ -298,8 +298,12 @@ class Matrix {
 
   }
 
-  draw(transform, xPos, yPos) {
+  draw(transform, xPos, yPos, circlingAngle) {
     let _this = this;
+
+    if(!circlingAngle) {
+      circlingAngle = 0;
+    }
 
     let xCenter = xPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
     let yCenter = yPos - this.submatrix.length * _this.cfg.matrix.cellSize / 2;
@@ -355,85 +359,42 @@ class Matrix {
     this.context.translate(transform.x, transform.y);
     this.context.scale(transform.k, transform.k);
     this.labels.forEach(function (label) {
-
-      _this.context.font = _this.cfg.matrix.cellSize + "px Consolas";
-      _this.context.fillStyle = label.color;
-      _this.context.fillText(label.name, label.x + xCenter + _this.cfg.matrix.cellSize/4, label.y + yCenter - 2);
-      _this.context.translate(label.y + xCenter - _this.cfg.matrix.cellSize + 2, label.x + yCenter + _this.cfg.matrix.cellSize/4);
-      _this.context.rotate((90 * Math.PI) / 180);
-      _this.context.fillText(label.name, 0, 0);
-      _this.context.rotate(-(90 * Math.PI) / 180);
-      _this.context.translate(-(label.y + xCenter - _this.cfg.matrix.cellSize + 2), -(label.x + yCenter + _this.cfg.matrix.cellSize/4));
+      _this.drawLabel(label, xCenter, yCenter, circlingAngle);
     });
     this.context.restore();
+  }
 
+  calculateCircling(x, y, highlightNew, highlightLeaving, circlingAngle) {
+    let _this = this;
+    let circlingRadius = _this.cfg.node.circlingRadius;
 
-    /*
-    let clusters = this.clusters;
+    let nodeX = x;
+    let nodeY = y;
+    if (true && highlightNew) {
+      nodeX = x + Math.cos(circlingAngle) * circlingRadius;
+      nodeY = y + Math.sin(circlingAngle) * circlingRadius;
+    } else if (true && highlightLeaving) {
+      nodeX = x + Math.cos(-1 * circlingAngle) * circlingRadius;
+      nodeY = y + Math.sin(-1 * circlingAngle) * circlingRadius;
+    }
+    return {x: nodeX, y: nodeY};
+  }
 
-    this.cells.forEach(function (cell) {
-      cell.style("stroke", function (d) {
-        if ("node" in d && d.node.highlighted) {
-          return "#eee";
-        }
-        return _this.cfg.matrix.cellStroke;
-      })
-        .style("stroke-width", _this.cfg.matrix.cellStrokeWidth)
-        .style("opacity", 1)
-        .style("fill", function (d) {
-          if (d.x === d.y) {
-            return clusters[d.node.cluster].color;
-          }
-          return d.z ? _this.cfg.matrix.cellColorLink : _this.cfg.matrix.cellColor;
-        });
-    });
+  drawLabel(label, x, y) {
+    let coords = this.calculateCircling(x, y, true, false, )
+    let xCenter = coords.x;
+    let yCenter = coords.y;
+    let _this = this;
 
+    _this.context.font = _this.cfg.matrix.cellSize + "px Consolas";
+    _this.context.fillStyle = label.color;
+    _this.context.fillText(label.name, label.x + xCenter + _this.cfg.matrix.cellSize/4, label.y + yCenter - 2);
+    _this.context.translate(label.y + xCenter - _this.cfg.matrix.cellSize + 2, label.x + yCenter + _this.cfg.matrix.cellSize/4);
+    _this.context.rotate((90 * Math.PI) / 180);
+    _this.context.fillText(label.name, 0, 0);
+    _this.context.rotate(-(90 * Math.PI) / 180);
+    _this.context.translate(-(label.y + xCenter - _this.cfg.matrix.cellSize + 2), -(label.x + yCenter + _this.cfg.matrix.cellSize/4));
 
-
-        d3.selectAll(".bridge").attr("d", function (d) {
-
-          if (d.invisible || !d.sourceNode.xPos || !d.targetNode.xPos || !d.sourceNode.yPos || !d.targetNode.yPos) {
-            return;
-          }
-
-          let sourceAnchor = {x: d.sourceNode.xPos, y: d.sourceNode.yPos};
-          let sourcePivot = {x: d.sourceNode.xPos, y: d.sourceNode.yPos};
-          let targetAnchor = {x: d.targetNode.xPos, y: d.targetNode.yPos};
-          let targetPivot = {x: d.targetNode.xPos, y: d.targetNode.yPos};
-
-          let theta = calculateTheta(d.sourceNode, d.targetNode);
-
-          if ('subgraph' in d.sourceNode) {
-            if(!d.sourceNode.matrix) {
-              return;
-            }
-            let index = d.sourceNode.matrix.scale.domain().indexOf(nodeIndexOf(d.sourceNode.subgraph.nodes, d.originalSource));
-            updateAnchor(d.sourceNode, index, theta, _this.cfg.matrix.margin, sourceAnchor, sourcePivot);
-          }
-          if ('subgraph' in d.targetNode) {
-            if(!d.targetNode.matrix) {
-              return;
-            }
-            if(d.targetNode.matrix) {
-              let index = d.targetNode.matrix.scale.domain().indexOf(nodeIndexOf(d.targetNode.subgraph.nodes, d.originalTarget));
-
-              updateAnchor(d.targetNode, index, (theta + 180) % 360, _this.cfg.matrix.margin, targetAnchor, targetPivot);
-            }
-
-          }
-
-          return _this.drawBridge(sourceAnchor.x, sourceAnchor.y, sourcePivot.x, sourcePivot.y, targetPivot.x, targetPivot.y, targetAnchor.x, targetAnchor.y);
-        }).style("fill", "transparent")
-          .style("stroke", _this.cfg.matrix.bridgeStroke)
-          .style("stroke-width", function (d) {
-            if (d.invisible) {
-              return 0;
-            }
-            return _this.cfg.matrix.bridgeStrokeWidth;
-          });
-
-
-         */
   }
 
   drawBridge(link) {
