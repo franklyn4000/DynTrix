@@ -12,7 +12,8 @@
     "radiusL": 16,
     "stroke": "#000",
     "strokeHighlighted": "#efefef",
-    "strokeWidth": 1
+    "strokeWidth": 1,
+    "circlingRadius": 3
   },
   "link": {
     "strength": 1.5,
