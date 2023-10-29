@@ -9,7 +9,7 @@ M =  nx.duplication_divergence_graph(120, 0.4, seed=None)
 
 L =  nx.barabasi_albert_graph(500, 1, seed=None, initial_graph=nx.barabasi_albert_graph(100, 2, seed=None, initial_graph=nx.watts_strogatz_graph(40, 2, 0.22)))
 
-L = nx.duplication_divergence_graph(10000, 0.2, seed=None)
+L = nx.duplication_divergence_graph(15000, 0.2, seed=None)
 
 #G = nx.random_lobster(100, 0.8, 0.4)
 
