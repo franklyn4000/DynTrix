@@ -381,6 +381,7 @@ footer {
   display: flex;
   flex-direction: row;
   overflow: hidden;
+
 }
 
 #clusterslist {
@@ -389,6 +390,7 @@ footer {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 #nodeslist {
@@ -397,15 +399,18 @@ footer {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 #colorscale .colorscale-wrapper {
+  width: 40rem;
   display: flex;
   height: 2.5rem;
   justify-content: left;
   align-items: center;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 #colorscale .colorscale-item {

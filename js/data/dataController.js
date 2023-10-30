@@ -51,6 +51,9 @@ class DataController {
       case 'infoVis':
         this.data = this.preProcessData(await parseInfoVis(false, false));
         break;
+      case 'vispub':
+        this.data = this.preProcessData(await parseVispub());
+        break;
       case 'vdBunt':
         this.data = this.preProcessData(await parseVdBunt());
         break;
@@ -108,7 +111,7 @@ class DataController {
     data.combinedGraph.links = Array.from(data.combinedGraph.links, ([name, value]) => (value));
 
     rawData.timeslices.forEach(function (rawSlice) {
-      let newSlice = {tag: rawSlice.tag, nodes: [], links: [], matrices: [], nodes2: new Map(), links2: new Map()}
+      let newSlice = {displaytag: rawSlice.displaytag, tag: rawSlice.tag, nodes: [], links: [], matrices: [], nodes2: new Map(), links2: new Map()}
       rawSlice.nodes.forEach(function (rawNode) {
         let newNode = {id: rawNode.id, name: rawNode.name, group: rawNode.group, cluster: 0, clusterings: {}, visualNode: getNodeByName(data.combinedGraph.nodes, rawNode.name)}
         newSlice.nodes2.set(newNode.id, newNode);
@@ -154,6 +157,8 @@ class DataController {
         }
       });
     }
+
+    data.groups = rawData.groups;
 
     console.log(data)
     return data;

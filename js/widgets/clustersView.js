@@ -1,3 +1,4 @@
+cc = "";
 class ClustersView {
   graph = null;
   data = null;
@@ -5,6 +6,7 @@ class ClustersView {
   currentClusters = [];
   selectedClusters = [];
   currentNodes = [];
+
 
   constructor() {
   }
@@ -20,13 +22,14 @@ class ClustersView {
     document.getElementById("filterText").addEventListener("input", this.filterNodes.bind(_this));
   }
 
-  update(data, currentClusters, currentNodes, allClusters) {
+  update(data, currentClusters, currentNodes, allClusters, currentClustering) {
     let _this = this;
 
     this.currentClusters = currentClusters;
     this.allClusters = allClusters;
 
     this.currentNodes = currentNodes;
+    cc = currentClustering;
 
     const clusterView = document.getElementById("clusterslist");
     clusterView.innerHTML = '';
@@ -40,7 +43,7 @@ class ClustersView {
       return 0;
     });
 
-    const filteredClusters = currentClusters.filter(this.filterText);
+    const filteredClusters = currentClusters.filter(this.filterClusters);
 
     const nodeList = Array.from( currentNodes.values() );
     const filteredNodes = nodeList.filter(this.filterText);
@@ -100,7 +103,14 @@ class ClustersView {
       }
       btnContainer.appendChild(deleteBtn);
 */
-      btnLabel.innerHTML = cluster.name + '';
+
+      if(cluster.group !== "none" && cc === "Labels") {
+        btnLabel.innerHTML = cluster.group + '';
+      } else {
+        btnLabel.innerHTML = cluster.name + '';
+      }
+
+
       btnContainer.appendChild(btnLabel);
 
 
@@ -112,8 +122,9 @@ class ClustersView {
 
     filteredNodes.forEach(function(node) {
       let btnWrapper = document.createElement("div");
-      let btnContainer = document.createElement("div");
       let gotoButton = document.createElement("button");
+      let btnContainer = document.createElement("div");
+
 
       btnContainer.id = "clustersView-node-" + node.id;
       btnContainer.classList.add("colorscale-item");
@@ -155,9 +166,9 @@ class ClustersView {
 
       gotoButton.innerHTML = '◎';
       btnWrapper.classList.add("colorscale-wrapper");
-
-      btnWrapper.appendChild(btnContainer);
       btnWrapper.appendChild(gotoButton);
+      btnWrapper.appendChild(btnContainer);
+
       nodesView.appendChild(btnWrapper);
     });
 
@@ -168,7 +179,22 @@ class ClustersView {
   }
 
   filterNodes() {
-    this.update(null, this.currentClusters, this.currentNodes, this.allClusters)
+    this.update(null, this.currentClusters, this.currentNodes, this.allClusters, cc)
+  }
+
+  filterClusters(c) {
+    let filter = document.getElementById("filterText").value.toLowerCase();
+
+    let property = "";
+    if(c.group && c.group !== "none" && cc === "Labels") {
+      property = c.group;
+    } else if(c.name) {
+      property = c.name;
+    }
+
+    console.log(c)
+
+    return property.toLowerCase().includes(filter);
   }
 
   hoverCluster(cluster) {
@@ -231,6 +257,10 @@ class ClustersView {
    // document.getElementById("clustersView-node-" + node.id).style.backgroundColor = pSBC(0.45, this.allClusters[node.cluster].color);
     if(document.getElementById("clustersView-node-" + node.id)) {
       if(!this.isNodeSelected(node)) {
+
+        this.scrollNodes(node.id);
+        this.scrollClusters(node.cluster);
+
         document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
       } else {
         this.unSelectNode(node);
@@ -286,6 +316,20 @@ class ClustersView {
     });
   }
 
+
+  scrollNodes(index) {
+    const nodesView = document.getElementById("nodeslist");
+    let listItemHeight = document.getElementById('clustersView-node-' + index).clientHeight;
+
+    nodesView.scrollTo(0, listItemHeight * index);
+  }
+
+  scrollClusters(index) {
+    const clusterView = document.getElementById("clusterslist");
+    let listItemHeight = document.getElementById('clustersView-cluster-' + index).clientHeight;
+
+    clusterView.scrollTo(0, listItemHeight * index);
+  }
 
   lightenDarkenColor(col, amt) {
     col = parseInt(col, 16);

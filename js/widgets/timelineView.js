@@ -77,7 +77,12 @@ class TimelineView {
       let slice = document.createElement("div");
       slice.id = 'timeslice-' + i;
       slice.classList.add('timeslice');
-      slice.appendChild(document.createTextNode(d.tag));
+      if(d.displaytag) {
+        slice.appendChild(document.createTextNode(d.displaytag));
+      } else {
+        slice.appendChild(document.createTextNode(d.tag));
+      }
+
 
       timeline.append(slice);
 

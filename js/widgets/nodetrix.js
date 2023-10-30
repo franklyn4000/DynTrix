@@ -943,7 +943,7 @@ class NodeTrix {
     this.clusteringController.changeClustering(this.logicalGraph, clustering);
 
 
-    this.clustersView.update(this.logicalGraph, this.clusteringController.getCurrentClusters(this.logicalGraph, clustering), this.logicalGraph.nodes2, this.clusters);
+    this.clustersView.update(this.logicalGraph, this.clusteringController.getCurrentClusters(this.logicalGraph, clustering), this.logicalGraph.nodes2, this.clusters, clustering);
     this.updateNodes(this.visualGraph.nodes);
     this.viewmatrix.forEach(function (nodetrix) {
       nodetrix.matrix.update(false);

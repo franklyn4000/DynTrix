@@ -77,26 +77,6 @@ function getLinkById(links, id) {
   return null;
 }
 
-function getVisualNodeById(nodes, id) {
-  for (let i = 0; i < nodes.length; i++) {
-    let node = nodes[i];
-    if ('subgraph' in node) {
-      for (let j = 0; j < node.subgraph.nodes.length; j++) {
-        let subnode = node.subgraph.nodes[j];
-        if (subnode.id === id) {
-          return subnode;
-        }
-      }
-    } else {
-      if (node.id === id) {
-        return node;
-      }
-    }
-  }
-  return null;
-}
-
-
 function getMatrixCellsByLinkId(matrix, source, target) {
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix.length; j++) {
@@ -108,69 +88,6 @@ function getMatrixCellsByLinkId(matrix, source, target) {
   return null;
 }
 
-function getLinksToNode(node, links) {
-  let nodeLinks = [];
-  for (let i = 0; i < links.length; i++) {
-    if(links[i].source === node.id || links[i].target === node.id) {
-      nodeLinks.push(links[i]);
-    }
-  }
-  return nodeLinks;
-}
-
-function containsNode(array, node) {
-  for (let n = 0; n < array.length; n++) {
-    if(array[n].name === node.name) {
-      return n;
-    }
-  }
-  return -1;
-}
-
-function extractAllGroups(data) {
-  this.created = [];
-  let groups = [];
-  for (let n = 0; n < data.timeslices.length; n++) {
-    let g = data.timeslices[n];
-    for (let i = 0; i < g.nodes.length; i++) {
-      let node = g.nodes[i]
-
-      if ('subgraph' in node) {
-      } else {
-        if (!groups.includes(node.group)) {
-          groups.push(node.group);
-          this.created.push(false);
-        }
-      }
-    }
-  }
-
-  return groups;
-}
-
-function removeInvalidNodes(g, nodes) {
-  let validNodes = [];
-
-  for (let i = 0; i < nodes.length; i++) {
-    if (g.nodes2.has(nodes[i])) {
-      validNodes.push(nodes[i]);
-    }
-  }
-  return validNodes;
-
-}
-
-function getInvalidNodes(g, nodes) {
-  let invalidNodes = [];
-
-  for (let i = 0; i < nodes.length; i++) {
-    if (!g.nodes2.has(nodes[i])) {
-      invalidNodes.push(nodes[i]);
-    }
-  }
-  return invalidNodes;
-
-}
 
 function getTimeSliceId (graph, year) {
   let index = -1;
@@ -186,19 +103,6 @@ function createEmptyGraph() {
   let graph = {};
   graph.timeslices = [{tag:0, nodes:[], links:[]}];
   return graph;
-}
-
-function nodeIndexOf(array, node) {
-  for (let i = 0; i < array.length; i++) {
-    if (
-      array[i].name === node.name &&
-      array[i].group === node.group &&
-      array[i].id === node.id
-    ) {
-      return i;
-    }
-  }
-  return -1;
 }
 
 class IDFactory2 {

@@ -2,7 +2,7 @@ class ClusteringController {
   clusters = [];
   data = null;
   currentClustering = null;
-  clusterAmount = 500;
+  clusterAmount = 12500;
 
   constructor() {
   }
@@ -149,13 +149,14 @@ class ClusteringController {
         '#b03060', '#008080', '#006400',
         '#808000', '#2e8b57', '#da70d6', '#dc143c']
 
-    let groups = extractAllGroups(data);
-
     for (let i = 0; i < this.clusterAmount; i++) {
+
       let group = "none";
 
-      if (i < groups.length) group = groups[i];
-
+      if(data.groups) {
+        let key = Array.from(data.groups.keys())[i];
+        group = key;
+      }
 
       this.clusters.push({id: i, color: palette[index], name: "cluster " + i, group: group})
       if (++index >= palette.length) index = 0;
@@ -203,7 +204,7 @@ class ClusteringController {
     let _this = this;
     graph.timeslices.forEach(function (slice) {
       slice.nodes2.forEach(function (n) {
-        n.clusterings["Labels"] = _this.getClusterByGroupName(n.group);
+        n.clusterings["Labels"] = n.group;
       });
     });
   }
@@ -312,14 +313,4 @@ class ClusteringController {
     return currentClusters;
   }
 
-  getClusterByGroupName(name) {
-    let result = 0;
-
-    this.clusters.forEach(function (n) {
-      if (n.group === name) {
-        result = n.id;
-      }
-    });
-    return result;
-  }
 }
