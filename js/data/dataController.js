@@ -51,8 +51,11 @@ class DataController {
       case 'infoVis':
         this.data = this.preProcessData(await parseInfoVis(false, false));
         break;
-      case 'vispub':
-        this.data = this.preProcessData(await parseVispub());
+      case 'vispub1':
+        this.data = this.preProcessData(await parseVispub(["Vis", "InfoVis", "VAST"], 2000, 5));
+        break;
+      case 'vispub2':
+        this.data = this.preProcessData(await parseVispub([], 0, 5));
         break;
       case 'vdBunt':
         this.data = this.preProcessData(await parseVdBunt());
@@ -96,6 +99,8 @@ class DataController {
       colorToNode: new Map(),
       highestVolatility: 0
     }
+
+    console.log(rawData)
 
     rawData.timeslices.forEach(function (rawSlice) {
       rawSlice.nodes.forEach(function (rawNode) {

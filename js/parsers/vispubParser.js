@@ -1,11 +1,11 @@
-async function parseVispub() {
+async function parseVispub(allowedConferences, minYear, agg) {
   let graph = null;
 
   await d3.csv("data/infoVis2.csv")
     .then(function(data) {
 
 
-      graph = parseGraph(data);
+      graph = parseVispubGraph(data, allowedConferences, minYear, agg);
 
     })
     .catch(function(error){
@@ -18,7 +18,7 @@ async function parseVispub() {
 
 let groups = new Map();
 
-function parseGraph(papers) {
+function parseVispubGraph(papers, allowedConferences, minYear, agg) {
 
   let graph = {};
   graph.timeslices = [];
@@ -27,11 +27,9 @@ function parseGraph(papers) {
   let firstYear = Number.MAX_VALUE;
   let lastYear = Number.MIN_VALUE;
 
-  let allowedConferences =  ["Vis", "InfoVis", "VAST"];
 
   let limit = 0;
 
-  const agg = 5;
 
 
 
@@ -39,7 +37,7 @@ function parseGraph(papers) {
       let coAuthors = [];
 
 
-      if(!allowedConferences.includes(paper["Conference"]) || limit > 100) {
+      if(allowedConferences.length > 0 && !allowedConferences.includes(paper["Conference"]) || paper.Year < minYear || limit > 100) {
         continue;
       }
 
@@ -52,10 +50,10 @@ function parseGraph(papers) {
 
       authors.forEach(function (author, i) {
 
-        createNode(graph, author, affiliations[i], paper.Year, agg);
+        createVispubNode(graph, author, affiliations[i], paper.Year, agg);
 
         coAuthors.forEach(function (coAuthor) {
-          createLink(graph, author, coAuthor, paper.Year, agg);
+          createVispubLink(graph, author, coAuthor, paper.Year, agg);
         });
 
         coAuthors.push(author);
@@ -70,7 +68,7 @@ function parseGraph(papers) {
 }
 
 
-function createNode(graph, author, affiliation, year, agg) {
+function createVispubNode(graph, author, affiliation, year, agg) {
 
   let diff = year % agg;
   year -= diff;
@@ -95,7 +93,7 @@ function createNode(graph, author, affiliation, year, agg) {
   }
 }
 
-function createLink(graph, author, coAuthor, year, agg) {
+function createVispubLink(graph, author, coAuthor, year, agg) {
 
     let diff = year % agg;
     year -= diff;

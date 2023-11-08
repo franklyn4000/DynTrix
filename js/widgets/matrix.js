@@ -15,6 +15,12 @@ class Matrix {
   hoverNodes = {rowNode:null, columnNode:null};
   tempNode = null;
 
+  highlightNewEdge = false;
+  highlightLeavingEdge = false;
+  highlightNew = false;
+  highlightLeaving = false;
+  leavingNodes = [];
+
   constructor(svg, cfg, tempNode) {
     this.svg = svg;
     this.cfg = cfg;
@@ -38,6 +44,7 @@ class Matrix {
 
   setTimeslice(leavingNodes, logicalGraph) {
     let _this = this;
+    this.leavingNodes = leavingNodes;
 
     this.submatrix.forEach(function (row) {
       row.forEach(function (subCell) {
@@ -54,6 +61,8 @@ class Matrix {
       if(cell) {
         cell.n2.z = 1;
         cell.n1.z = 1;
+        cell.link = link;
+        cell.asda= "asd";
       }
     });
 
@@ -93,10 +102,6 @@ class Matrix {
       row.forEach(function (subCell, j) {
         let cell = {};
 
-
-
-
-
         cell.x = _this.orderStore.oldOrder ? oldScale(j) : _this.scale(j);
         cell.y = rowY;
 
@@ -118,10 +123,23 @@ class Matrix {
             cell.color = pSBC(0.3, _this.clusters[subCell.node.cluster].color);
           }
         } else {
+          let c = _this.cfg.matrix.cellColor;
+          if(subCell.z) {
+
+            let link = getLinkFromMapBySourceTarget(subCell.parent.subgraph.links, subCell.n1, subCell.n2)[1];
+            if(link.willGo && _this.highlightLeavingEdge) {
+              c = pSBC(0.3, _this.cfg.matrix.cellColorLink);
+            } else if(link.isNew && _this.highlightNewEdge) {
+              c = pSBC(0.3, _this.cfg.matrix.cellColorLink);
+            } else {
+              c = _this.cfg.matrix.cellColorLink;
+            }
+          }
+
           if(!_this.isHoveringSubCell(subCell)) {
-            cell.color = subCell.z ? _this.cfg.matrix.cellColorLink : _this.cfg.matrix.cellColor;
+            cell.color = c;
           } else {
-            cell.color = pSBC(-0.3, subCell.z ? _this.cfg.matrix.cellColorLink : _this.cfg.matrix.cellColor);
+            cell.color = pSBC(-0.3, c);
           }
         }
         //ell.color = subCell.hiddenColor;
@@ -351,6 +369,10 @@ class Matrix {
       _this.drawBridge(link);
       _this.context.strokeStyle = '#000000';
       _this.context.lineWidth = 1;
+
+      if((link.isNew && _this.highlightNewEdge) || (link.willGo && _this.highlightLeavingEdge))
+        _this.context.lineWidth = 4;
+
       _this.context.stroke();
     });
     this.context.restore();
@@ -364,34 +386,34 @@ class Matrix {
     this.context.restore();
   }
 
-  calculateCircling(x, y, highlightNew, highlightLeaving, circlingAngle) {
+  calculateCircling(x, y, node, highlightNew, highlightLeaving, circlingAngle) {
     let _this = this;
     let circlingRadius = _this.cfg.node.circlingRadius;
-
+    y = 0;
     let nodeX = x;
     let nodeY = y;
-    if (true && highlightNew) {
+    if (this.leavingNodes.indexOf(node.id) < 0 && node.isNew && this.highlightNew) {
       nodeX = x + Math.cos(circlingAngle) * circlingRadius;
       nodeY = y + Math.sin(circlingAngle) * circlingRadius;
-    } else if (true && highlightLeaving) {
+    } else if (this.leavingNodes.indexOf(node.id) < 0 && node.willGo && this.highlightLeaving) {
       nodeX = x + Math.cos(-1 * circlingAngle) * circlingRadius;
       nodeY = y + Math.sin(-1 * circlingAngle) * circlingRadius;
     }
     return {x: nodeX, y: nodeY};
   }
 
-  drawLabel(label, x, y) {
-    let coords = this.calculateCircling(x, y, true, false, )
-    let xCenter = coords.x;
-    let yCenter = coords.y;
+  drawLabel(label, x, y, circlingAngle) {
+    let coords = this.calculateCircling(x, y, label.node, this.highlightNew, this.highlightLeaving, circlingAngle)
+    let xCenter = x;
+    let yCenter = y;
     let _this = this;
 
     _this.context.font = _this.cfg.matrix.cellSize + "px Consolas";
     _this.context.fillStyle = label.color;
-    _this.context.fillText(label.name, label.x + xCenter + _this.cfg.matrix.cellSize/4, label.y + yCenter - 2);
+    _this.context.fillText(label.name, label.x + coords.x + _this.cfg.matrix.cellSize/4, label.y + yCenter - 2);
     _this.context.translate(label.y + xCenter - _this.cfg.matrix.cellSize + 2, label.x + yCenter + _this.cfg.matrix.cellSize/4);
     _this.context.rotate((90 * Math.PI) / 180);
-    _this.context.fillText(label.name, 0, 0);
+    _this.context.fillText(label.name, coords.y, 0);
     _this.context.rotate(-(90 * Math.PI) / 180);
     _this.context.translate(-(label.y + xCenter - _this.cfg.matrix.cellSize + 2), -(label.x + yCenter + _this.cfg.matrix.cellSize/4));
 

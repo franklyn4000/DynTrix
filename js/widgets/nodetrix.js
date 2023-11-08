@@ -113,26 +113,62 @@ class NodeTrix {
     document.getElementById("setNone").onclick = function (event) {
       _this.highlightNew = false;
       _this.highlightLeaving = false;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNew = false;
+        matrix.matrix.highlightLeaving = false;
+        matrix.matrix.update(false, null);
+      });
+    }
+
+    document.getElementById("setNoneEdges").onclick = function (event) {
+      _this.highlightNewEdge = false;
+      _this.highlightLeavingEdge = false;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNewEdge = false;
+        matrix.matrix.highlightLeavingEdge = false;
+        matrix.matrix.update(false, null);
+      });
+
     }
 
     document.getElementById("setIncoming").onclick = function (event) {
       _this.highlightNew = true;
       _this.highlightLeaving = false;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNew = true;
+        matrix.matrix.highlightLeaving = false;
+        matrix.matrix.update(false, null);
+      });
     }
 
     document.getElementById("setOutgoing").onclick = function (event) {
       _this.highlightNew = false;
       _this.highlightLeaving = true;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNewEdge = false;
+        matrix.matrix.highlightLeavingEdge = true;
+        matrix.matrix.update(false, null);
+      });
     }
 
     document.getElementById("setIncomingEdge").onclick = function (event) {
       _this.highlightNewEdge = true;
       _this.highlightLeavingEdge = false;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNewEdge = true;
+        matrix.matrix.highlightLeavingEdge = false;
+        matrix.matrix.update(false, null);
+      });
     }
 
     document.getElementById("setOutgoingEdge").onclick = function (event) {
       _this.highlightNewEdge = false;
       _this.highlightLeavingEdge = true;
+      _this.viewmatrix.forEach(function (matrix) {
+        matrix.matrix.highlightNewEdge = false;
+        matrix.matrix.highlightLeavingEdge = true;
+        matrix.matrix.update(false, null);
+      });
     }
 
     document.getElementById("unselectButton").onclick = function () {

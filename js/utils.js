@@ -68,6 +68,15 @@ function getLinkBySourceTarget(links, source, target) {
   return null;
 }
 
+function getLinkFromMapBySourceTarget(links, source, target) {
+  for (let link of links) {
+    if (link[1].sourceNode.id === source.id && link[1].targetNode.id === target.id || link[1].sourceNode.id === target.id && link[1].targetNode.id === source.id) {
+      return link;
+    }
+  }
+  return null;
+}
+
 function getLinkById(links, id) {
   for (let i = 0; i < links.length; i++) {
     if (links[i].id === id) {
