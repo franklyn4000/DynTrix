@@ -7,6 +7,8 @@ class ClustersView {
   selectedClusters = [];
   currentNodes = [];
 
+  nodeListIndices = new Map();
+  clusterListIndices = new Map();
 
   constructor() {
   }
@@ -48,7 +50,7 @@ class ClustersView {
     const nodeList = Array.from( currentNodes.values() );
     const filteredNodes = nodeList.filter(this.filterText);
 
-
+    let clusterIndex = 0;
     filteredClusters.forEach(function(cluster) {
       let btnWrapper = document.createElement("div");
       let btnContainer = document.createElement("div");
@@ -104,6 +106,8 @@ class ClustersView {
       btnContainer.appendChild(deleteBtn);
 */
 
+      _this.clusterListIndices.set(cluster.id, clusterIndex);
+
       if(cluster.group !== "none" && cc === "Labels") {
         btnLabel.innerHTML = cluster.group + '';
       } else {
@@ -118,8 +122,10 @@ class ClustersView {
 
       btnWrapper.appendChild(btnContainer);
       clusterView.appendChild(btnWrapper);
+      clusterIndex++;
     });
 
+    let nodeIndex = 0;
     filteredNodes.forEach(function(node) {
       let btnWrapper = document.createElement("div");
       let gotoButton = document.createElement("button");
@@ -160,6 +166,8 @@ class ClustersView {
 
       let btnLabel = document.createElement("span");
 
+
+      _this.nodeListIndices.set(node.id, nodeIndex);
       btnLabel.innerHTML = node.name + '';
       btnContainer.appendChild(btnLabel);
 
@@ -170,6 +178,7 @@ class ClustersView {
       btnWrapper.appendChild(btnContainer);
 
       nodesView.appendChild(btnWrapper);
+      nodeIndex++;
     });
 
   }
@@ -191,8 +200,6 @@ class ClustersView {
     } else if(c.name) {
       property = c.name;
     }
-
-    console.log(c)
 
     return property.toLowerCase().includes(filter);
   }
@@ -258,8 +265,16 @@ class ClustersView {
     if(document.getElementById("clustersView-node-" + node.id)) {
       if(!this.isNodeSelected(node)) {
 
-        this.scrollNodes(node.id);
-        this.scrollClusters(node.cluster);
+
+        if(this.nodeListIndices.get(node.id)) {
+          this.scrollNodes(this.nodeListIndices.get(node.id));
+        }
+        console.log(this.clusterListIndices)
+        console.log(this.clusterListIndices.get(node.cluster))
+        if(this.clusterListIndices.get(node.cluster)) {
+          this.scrollClusters(this.clusterListIndices.get(node.cluster));
+        }
+
 
         document.getElementById("clustersView-node-" + node.id).style.border = "solid 3px "+ this.graph.cfg.general.selectionColor;
       } else {
@@ -269,6 +284,7 @@ class ClustersView {
   //  document.getElementById("clustersView-node-" + node.id).style.border = "solid 1px #000";
 
   }
+
 
   unSelectNode(node) {
     //document.getElementById("clustersView-node-" + node.id).style.backgroundColor = this.allClusters[node.cluster].color;
@@ -319,16 +335,28 @@ class ClustersView {
 
   scrollNodes(index) {
     const nodesView = document.getElementById("nodeslist");
-    let listItemHeight = document.getElementById('clustersView-node-' + index).clientHeight;
+    let listItemHeight = this.getListItemHeight();
 
     nodesView.scrollTo(0, listItemHeight * index);
   }
 
   scrollClusters(index) {
     const clusterView = document.getElementById("clusterslist");
-    let listItemHeight = document.getElementById('clustersView-cluster-' + index).clientHeight;
+    let listItemHeight = this.getListItemHeight();
 
     clusterView.scrollTo(0, listItemHeight * index);
+  }
+
+  getListItemHeight(){
+    const nodesView = document.getElementById("nodeslist");
+    let listItems = nodesView.getElementsByClassName("colorscale-item");
+
+    for(let i = 0; i < listItems.length; i++){
+      if(listItems[i]){
+        return listItems[i].clientHeight;
+      }
+    }
+    return 0;
   }
 
   lightenDarkenColor(col, amt) {

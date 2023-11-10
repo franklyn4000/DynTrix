@@ -460,7 +460,7 @@ footer {
 #util {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 #highlight div {
@@ -474,8 +474,30 @@ footer {
 .utility-button-container {
 
   background-color: #fff;
-  width: 50%;
   padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.util-container {
+
+  background-color: #fff;
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: space-between;
+}
+
+.util-container .label-like{
+  margin-right: 2rem;
+}
+
+.util-container div{
   flex-grow: 1;
 }
 
