@@ -364,6 +364,7 @@ class Matrix {
     this.context.save();
     this.context.translate(transform.x, transform.y);
     this.context.scale(transform.k, transform.k);
+    console.log(_this.highlightNewEdge, _this.highlightLeavingEdge)
     this.links.forEach(function (link) {
       _this.context.beginPath();
       _this.drawBridge(link);

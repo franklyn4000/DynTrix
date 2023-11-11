@@ -147,8 +147,8 @@ class NodeTrix {
       _this.highlightNew = false;
       _this.highlightLeaving = true;
       _this.viewmatrix.forEach(function (matrix) {
-        matrix.matrix.highlightNewEdge = false;
-        matrix.matrix.highlightLeavingEdge = true;
+        matrix.matrix.highlightNew = false;
+        matrix.matrix.highlightLeaving = true;
         matrix.matrix.update(false, null);
       });
     }
