@@ -61,6 +61,8 @@ class NodeTrix {
   lassoPoints = [];
   lassoStart = {};
 
+  framereq = null;
+
   constructor(w, h, cfg) {
     this.cfg = cfg;
     let _this = this;
@@ -256,7 +258,7 @@ class NodeTrix {
     this.setTimeSlice(timeSlice);
     this.update(0.5);
 
-    window.requestAnimationFrame(this.step.bind(this));
+    this.framereq = window.requestAnimationFrame(this.step.bind(this));
 
 
     d3.select('#canvas').on('mousemove', function (event) {
@@ -287,6 +289,7 @@ class NodeTrix {
       _this.circlingAngle += Math.PI / 180 * _this.circlingSpeed;
     }, 20);
 
+    return _this;
   }
 
   calculateRadius(node) {
@@ -1294,7 +1297,10 @@ class NodeTrix {
   }
 
   destroy() {
+    //this.setup({}, 0)
+    window.cancelAnimationFrame(this.framereq);
     this.simulation.stop();
+    console.log(this)
   }
 
 }

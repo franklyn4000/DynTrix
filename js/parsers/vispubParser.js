@@ -31,7 +31,17 @@ function parseVispubGraph(papers, allowedConferences, minYear, agg) {
   let limit = 0;
 
 
+  for (const paper of papers) {
 
+    if(allowedConferences.length > 0 && !allowedConferences.includes(paper["Conference"]) || paper.Year < minYear || limit > 100) {
+      continue;
+    }
+
+    firstYear = Math.min(firstYear, paper.Year);
+    lastYear = Math.max(lastYear, paper.Year);
+  }
+
+  createVispubTimeslices(graph, firstYear, lastYear, agg);
 
   for (const paper of papers) {
       let coAuthors = [];
@@ -41,12 +51,12 @@ function parseVispubGraph(papers, allowedConferences, minYear, agg) {
         continue;
       }
 
-      firstYear = Math.min(firstYear, paper.Year);
-      lastYear = Math.max(lastYear, paper.Year);
 
        let authors = paper["AuthorNames-Deduped"].split(";");
 
       let affiliations = paper["AuthorAffiliation"].split(";");
+
+
 
       authors.forEach(function (author, i) {
 
@@ -67,18 +77,21 @@ function parseVispubGraph(papers, allowedConferences, minYear, agg) {
   return graph;
 }
 
+function createVispubTimeslices(graph, minYear, maxYear, agg) {
+
+  for(let year = minYear; year <= maxYear; year += agg) {
+    let tag = year + " - " + (year+agg);
+    graph.timeslices.push({displaytag: tag, tag: year - (minYear % agg), nodes: [], links: []})
+  }
+
+  graph.timeslices.reverse();
+
+}
 
 function createVispubNode(graph, author, affiliation, year, agg) {
-
   let diff = year % agg;
   year -= diff;
 
-  let tag = year + " - " + (year+agg);
-
-
-  if(getTimeSliceId(graph, year) < 0) {
-    graph.timeslices.push({displaytag: tag, tag: year, nodes: [], links: []})
-  }
 
   let id = getNode(author, graph);
   if(id < 0) {

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 function createNodeTrix(data) {
+  console.log(nodetrix)
   if(nodetrix) {
     nodetrix.destroy();
   }

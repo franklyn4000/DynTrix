@@ -23,16 +23,18 @@
       <select name="datasets" id="datasets">
         <option value="none">none</option>
         <optgroup label="Real-world data">
-          <option value="charriere">Charriere</option>
-          <option value="dialog">Dialog</option>
-          <option value="mooc">MOOC</option>
-          <option value="rugby">Rugby</option>
-          <option value="vdBunt">van de Bunt</option>
-          <option value="infoVis">InfoVis</option>
-          <option value="vispub1">Vispub reduced (5026n, 18179e)</option>
-          <option value="vispub2">Vispub (6610n, 23100e)</option>
-          <!--<option value="infoVisPersistNodes">InfoVis persist nodes</option>-->
-          <option value="infoVisPersistNodesEdges">InfoVis persist nodes & edges</option>
+          <!-- <option value="charriere">Charriere</option>-->
+           <option value="dialog">Dialog</option>
+           <option value="mooc">MOOC</option>
+           <option value="rugby">Rugby</option>
+           <option value="vdBunt">van de Bunt</option>
+           <option value="infoVis">InfoVis</option>
+           <option value="vispub0">Vispub from 2010 (3109n, 12243e)</option>
+           <option value="vispub0b">Vispub from 2005 (4181n, 15823e)</option>
+           <option value="vispub1">Vispub reduced (5026n, 18179e)</option>
+           <option value="vispub2">Vispub (6610n, 23100e)</option>
+           <!--<option value="infoVisPersistNodes">InfoVis persist nodes</option>-->
+          <!--<option value="infoVisPersistNodesEdges">InfoVis persist nodes & edges</option>-->
           <option value="ramp">Ramp</option>
         </optgroup>
         <optgroup label="generated data">
@@ -122,6 +124,11 @@
     </div>
   </aside>
   <main>
+    <div id="loader" class="">
+      <div class="ring">Loading
+        <span></span>
+      </div>
+    </div>
     <p class="help">Press X for lasso select</p>
     <p class="help">Press Shift to select by cluster</p>
     <p class="help">Press Alt and click a node to unpin</p>

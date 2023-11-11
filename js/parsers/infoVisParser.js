@@ -1,12 +1,12 @@
 
-async function parseInfoVis(persistNodes, persistEdges) {
+async function parseInfoVis(persistNodes, persistEdges, minYear, agg) {
   let graph = null;
 
-  await d3.csv("data/infoVis.txt")
+  await d3.csv("data/infovis-citation-data.txt")
     .then(function(data) {
 
       let papers = parsePapers(data);
-      graph = parseGraph(papers, persistNodes, persistEdges);
+      graph = parseGraph(papers, persistNodes, persistEdges, minYear, agg);
 
 
     })
@@ -19,7 +19,7 @@ async function parseInfoVis(persistNodes, persistEdges) {
 }
 
 
-function parseGraph(papers, persistNodes, persistEdges) {
+function parseGraph(papers, persistNodes, persistEdges, minYear, agg) {
 
   let graph = {};
   graph.timeslices = [];
@@ -27,28 +27,45 @@ function parseGraph(papers, persistNodes, persistEdges) {
 
   let firstYear = Number.MAX_VALUE;
   let lastYear = Number.MIN_VALUE;
-
+/*
   if(persistNodes) {
     for (const paper of papers.values()) {
       firstYear = Math.min(firstYear, paper.year);
       lastYear = Math.max(lastYear, paper.year);
     }
   }
+*/
+
 
   for (const paper of papers.values()) {
+
+    if(paper.year < minYear) {
+      continue;
+    }
+
+    firstYear = Math.min(firstYear, paper.year);
+    lastYear = Math.max(lastYear, paper.year);
+  }
+
+
+  createTimeslices(graph, firstYear, lastYear, agg);
+
+
+  for (const paper of papers.values()) {
+
+    if(paper.year < minYear) {
+      continue;
+    }
+
     let coAuthors = [];
 
-    if(!persistNodes) {
-      firstYear = Math.min(firstYear, paper.year);
-      lastYear = Math.max(lastYear, paper.year);
-    }
 
     paper.authors.forEach(function (author, i) {
 
-      createNode(graph, author, paper.year, lastYear);
+      createNode(graph, author, paper.year, lastYear, agg);
 
       coAuthors.forEach(function (coAuthor, i) {
-        createLink(graph, author, coAuthor, paper.year, lastYear);
+        createLink(graph, author, coAuthor, paper.year, lastYear, agg);
       });
 
       coAuthors.push(author);
@@ -60,46 +77,53 @@ function parseGraph(papers, persistNodes, persistEdges) {
   return graph;
 }
 
-function createNode(graph, author, y, lastYear) {
+function createTimeslices(graph, minYear, maxYear, agg) {
 
-  for(let year = y; year <= lastYear; year++) {
-    if(getTimeSliceId(graph, year) < 0) {
-      graph.timeslices.push({tag: year, nodes: [], links: []})
-    }
+  for(let year = minYear; year <= maxYear; year += agg) {
+    let tag = year + " - " + (year+agg);
+    graph.timeslices.push({displaytag: tag, tag: year - (minYear % agg), nodes: [], links: []})
+  }
+
+  graph.timeslices.reverse();
+
+}
+
+function createNode(graph, author, y, lastYear, agg) {
+  let diff = y % agg;
+  y -= diff;
+
+ // for(let year = y; year <= lastYear;) {
 
     let id = getNode(author, graph);
     if(id < 0) {
       id = idFactory.get('infoVisNode');
     }
 
-
-    if(!isNodeInYear(id, graph, year)) {
-      graph.timeslices[getTimeSliceId(graph, year)].nodes.push({name:author,group: 1, id: id})
+    if(!isNodeInYear(id, graph, y)) {
+      graph.timeslices[getTimeSliceId(graph, y)].nodes.push({name:author,group: 1, id: id})
     }
-  }
+ // }
 
 
 }
 
-function createLink(graph, author, coAuthor, y, lastYear) {
+function createLink(graph, author, coAuthor, y, lastYear, agg) {
+  let diff = y % agg;
+  y -= diff;
 
-  for(let year = y; year <= lastYear; year++) {
-    let source = getNodeInYear(author, graph, year);
-    let target = getNodeInYear(coAuthor, graph, year);
-
-    if(getTimeSliceId(graph, year) < 0) {
-      graph.timeslices.push({tag: year, nodes: [], links: []})
-    }
+  //for(let year = y; year <= lastYear;) {
+    let source = getNodeInYear(author, graph, y);
+    let target = getNodeInYear(coAuthor, graph, y);
 
     let id = getLink(source, target, graph);
     if(id < 0) {
       id = idFactory.get('infoVisLink');
     }
 
-    if(!isLinkInYear(id, graph, year)) {
-      graph.timeslices[getTimeSliceId(graph, year)].links.push({"source":source,"target":target,"value":1, "id": id})
+    if(!isLinkInYear(id, graph, y)) {
+      graph.timeslices[getTimeSliceId(graph, y)].links.push({"source":source,"target":target,"value":1, "id": id})
     }
-  }
+ // }
 
 }
 
@@ -177,7 +201,6 @@ function parsePapers(lines) {
   let onHeader = true;
 
   lines.forEach(function (fileLine, i) {
-
     let line = fileLine[""]
     if (line.startsWith("article")) {
       if (!onHeader) {

@@ -35,6 +35,10 @@ class DataController {
   }
 
   async loadData(dataName, callback) {
+
+    document.getElementById("vis").classList.add("loading");
+    document.getElementById("loader").classList.remove("notloading");
+
     switch (dataName) {
       case 'charriere':
         this.data = this.preProcessData(await parseCharriere());
@@ -49,7 +53,13 @@ class DataController {
         this.data = this.preProcessData(await parseRugby());
         break;
       case 'infoVis':
-        this.data = this.preProcessData(await parseInfoVis(false, false));
+        this.data = this.preProcessData(await parseInfoVis(false, false, 2010, 3));
+        break;
+      case 'vispub0':
+        this.data = this.preProcessData(await parseVispub(["Vis", "InfoVis", "VAST"], 2010, 3));
+        break;
+      case 'vispub0b':
+        this.data = this.preProcessData(await parseVispub(["Vis", "InfoVis", "VAST"], 2005, 5));
         break;
       case 'vispub1':
         this.data = this.preProcessData(await parseVispub(["Vis", "InfoVis", "VAST"], 2000, 5));
@@ -83,7 +93,13 @@ class DataController {
         this.data = createEmptyGraph();
     }
 
+    document.getElementById("vis").classList.remove("loading");
+    document.getElementById("loader").classList.add("notloading");
+
     callback(this.data);
+
+
+
     return this;
   }
 

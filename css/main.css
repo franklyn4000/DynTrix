@@ -115,6 +115,23 @@ p {
   height: calc(100vh - 100px);
 }
 
+#vis.loading {
+  height: 0;
+}
+
+#loader{
+  background-color: #ddd;
+  z-index: 9999;
+  width: 100%;
+  height: calc(100vh - 100px);
+}
+
+#loader.notloading{
+  height: 0;
+  display: none;
+}
+
+
 #selectiontools {
   position: absolute;
   left: calc(50% - 4rem);
@@ -589,4 +606,57 @@ label {
 
 .help:nth-child(3) {
   top: 3rem;
+}
+
+
+.ring
+{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  text-align:center;
+  line-height:150px;
+  font-size:20px;
+  color:#000;
+}
+
+.ring span
+{
+  display:block;
+  position:absolute;
+  top:calc(50% - 2px);
+  left:50%;
+  width:50%;
+  height:4px;
+  background:transparent;
+  transform-origin:left;
+  animation:animate 2s linear infinite;
+}
+.ring span:before
+{
+  content:'';
+  position:absolute;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background-color: #a6cee3;
+  border: solid 1px rgba(0, 0, 0, 0.87);
+  top:-6px;
+  right:-8px;
+}
+
+@keyframes animate
+{
+  0%
+  {
+    transform:rotate(0deg);
+  }
+  100%
+  {
+    transform:rotate(360deg);
+  }
 }
