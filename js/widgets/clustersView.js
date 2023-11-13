@@ -88,6 +88,7 @@ class ClustersView {
 
 
       let btnLabel = document.createElement("span");
+      let membersLabel = document.createElement("span");
       /*
       let createBtn = document.createElement("button");
       createBtn.innerHTML = 'Create';
@@ -108,13 +109,18 @@ class ClustersView {
 
       _this.clusterListIndices.set(cluster.id, clusterIndex);
 
+      const members = cluster.members;
+
+      membersLabel.innerHTML = members;
+      membersLabel.classList.add("members");
+
       if(cluster.group !== "none" && cc === "Labels") {
         btnLabel.innerHTML = cluster.group + '';
       } else {
         btnLabel.innerHTML = cluster.name + '';
       }
 
-
+      btnContainer.appendChild(membersLabel);
       btnContainer.appendChild(btnLabel);
 
 
@@ -269,8 +275,7 @@ class ClustersView {
         if(this.nodeListIndices.get(node.id)) {
           this.scrollNodes(this.nodeListIndices.get(node.id));
         }
-        console.log(this.clusterListIndices)
-        console.log(this.clusterListIndices.get(node.cluster))
+
         if(this.clusterListIndices.get(node.cluster)) {
           this.scrollClusters(this.clusterListIndices.get(node.cluster));
         }

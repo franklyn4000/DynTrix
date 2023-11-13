@@ -158,7 +158,7 @@ class ClusteringController {
         group = key;
       }
 
-      this.clusters.push({id: i, color: palette[index], name: "cluster " + i, group: group})
+      this.clusters.push({id: i, color: palette[index], name: "cluster " + i, group: group, members: 0})
       if (++index >= palette.length) index = 0;
     }
 
@@ -179,8 +179,8 @@ class ClusteringController {
     logicalGraph.nodes2.forEach(function (n) {
       n.cluster = n.clusterings[newClustering];
       n.visualNode.cluster = n.clusterings[newClustering];
+      //n.clusterings[newClustering].members++;
     });
-
 
     this.currentClustering = newClustering;
   }
@@ -302,9 +302,15 @@ class ClusteringController {
     let _this = this;
     let currentClusters = [];
 
+    _this.clusters.forEach(function (cluster) {
+      cluster.members = 0;
+    });
+
     logicalGraph.nodes2.forEach(function (n) {
 
       let cluster = _this.clusters[n.clusterings[clustering]];
+
+      cluster.members++;
 
       if (!currentClusters.includes(cluster)) {
         currentClusters.push(cluster);

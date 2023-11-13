@@ -42,7 +42,7 @@ class Matrix {
   }
 
 
-  setTimeslice(leavingNodes, logicalGraph) {
+  setTimeslice(leavingNodes, leavingBridges, logicalGraph) {
     let _this = this;
     this.leavingNodes = leavingNodes;
 
@@ -56,7 +56,11 @@ class Matrix {
       });
     });
 
+ //   console.log(logicalGraph.links2)
+
     logicalGraph.links2.forEach(function (link) {
+
+
       let cell = getMatrixCellsByLinkId(_this.submatrix, link.source, link.target)
       if(cell) {
         cell.n2.z = 1;
@@ -364,7 +368,6 @@ class Matrix {
     this.context.save();
     this.context.translate(transform.x, transform.y);
     this.context.scale(transform.k, transform.k);
-    console.log(_this.highlightNewEdge, _this.highlightLeavingEdge)
     this.links.forEach(function (link) {
       _this.context.beginPath();
       _this.drawBridge(link);
@@ -423,9 +426,17 @@ class Matrix {
   drawBridge(link) {
     let _this = this;
 
-    if (link.invisible || !link.sourceNode.x || !link.targetNode.x || !link.sourceNode.y || !link.targetNode.y) {
+
+
+    if (link.invisible ||
+      !link.sourceNode.x ||
+      !link.targetNode.x ||
+      !link.sourceNode.y ||
+      !link.targetNode.y
+    ) {
       return;
     }
+
 
     let sourceAnchor = {x: link.sourceNode.x, y: link.sourceNode.y};
     let sourcePivot = {x: link.sourceNode.x, y: link.sourceNode.y};

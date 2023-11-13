@@ -890,10 +890,10 @@ class NodeTrix {
       link.invisible = !_this.logicalGraph.links2.has(link.source + "-" + link.target);
     });
 
+
     this.viewbridges.forEach(function (bridge) {
       let source = bridge.originalSource ? bridge.originalSource.id : bridge.source;
       let target = bridge.originalTarget ? bridge.originalTarget.id : bridge.target;
-
       bridge.invisible = !_this.logicalGraph.links2.has(source + "-" + target);
     });
 
@@ -1082,6 +1082,7 @@ class NodeTrix {
       },
       setTimeSlice() {
         let leavingNodes = [];
+        let leavingBridges = [];
 
         this.cluster.forEach(function (nodeId) {
           if (!_this.logicalGraph.nodes2.has(nodeId)) {
@@ -1089,7 +1090,10 @@ class NodeTrix {
           }
         });
 
-        this.matrix.setTimeslice(leavingNodes, _this.logicalGraph);
+
+
+
+        this.matrix.setTimeslice(leavingNodes, leavingBridges, _this.logicalGraph);
 
         this.nodeSize = cluster.length * _this.cfg.matrix.cellSize;
         this.width = cluster.length * _this.cfg.matrix.cellSize + 10;
@@ -1159,6 +1163,7 @@ class NodeTrix {
           }
 
           if (!this.viewbridges.includes(edge)) {
+            console.log(edge)
             this.viewbridges.push(edge);
           }
 
@@ -1195,6 +1200,12 @@ class NodeTrix {
 
     this.colorToDeleteMatrix.set(nodeMatrix.deleteHiddenColor, nodeMatrix);
 
+
+    this.viewbridges.forEach(function (bridge) {
+      let source = bridge.originalSource ? bridge.originalSource.id : bridge.source;
+      let target = bridge.originalTarget ? bridge.originalTarget.id : bridge.target;
+      bridge.invisible = !_this.logicalGraph.links2.has(source + "-" + target);
+    });
 
     return nodeMatrix;
 

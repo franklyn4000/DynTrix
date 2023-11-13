@@ -84,7 +84,7 @@ function createVispubTimeslices(graph, minYear, maxYear, agg) {
     graph.timeslices.push({displaytag: tag, tag: year - (minYear % agg), nodes: [], links: []})
   }
 
-  graph.timeslices.reverse();
+  //graph.timeslices.reverse();
 
 }
 
