@@ -313,7 +313,11 @@ class Matrix {
     this.context.restore();
 
     _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2, _this.cfg.matrix.buttonSize, _this.cfg.matrix.buttonSize);
+    _this.context.rect(
+      xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2 - _this.cfg.matrix.cellSize,
+      yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2 + _this.cfg.matrix.cellSize,
+      _this.cfg.matrix.buttonSize,
+      _this.cfg.matrix.buttonSize);
     _this.context.fillStyle = this.submatrix[0][0].parent.deleteHiddenColor;
     _this.context.fill();
     this.context.restore();
@@ -348,22 +352,27 @@ class Matrix {
     this.context.translate(transform.x, transform.y);
     this.context.scale(transform.k, transform.k);
 
-    _this.context.beginPath();
-    _this.context.rect(xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2, yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2, _this.cfg.matrix.buttonSize, _this.cfg.matrix.buttonSize);
-    _this.context.fillStyle = _this.cfg.general.secondaryColor;
-    _this.hiddenContext.strokeStyle = "#555";
-    _this.context.fill();
-    _this.context.stroke();
-    this.context.restore();
+   _this.context.beginPath();
+   _this.context.rect(
+     xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2 - _this.cfg.matrix.cellSize,
+     yCenter - _this.cfg.matrix.cellSize * 2 - _this.cfg.matrix.buttonSize / 2 + _this.cfg.matrix.cellSize,
+     _this.cfg.matrix.buttonSize,
+     _this.cfg.matrix.buttonSize);
+   _this.context.fillStyle = _this.cfg.general.subtlerColor;
+   _this.hiddenContext.strokeStyle = "#888";
+   _this.context.fill();
+   _this.context.stroke();
+   this.context.restore();
 
-    this.context.save();
-    this.context.translate(transform.x, transform.y);
-    this.context.scale(transform.k, transform.k);
-    _this.context.font = "20px Arial";
-    _this.context.fillStyle = "#333";
-    _this.context.fillText("X", xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2 + 7, yCenter - _this.cfg.matrix.cellSize * 2 + 8);
-    this.context.restore();
-
+   this.context.save();
+   this.context.translate(transform.x, transform.y);
+   this.context.scale(transform.k, transform.k);
+   _this.context.font = "22px Arial";
+   _this.context.fillStyle = "#655";
+   _this.context.fillText("X",
+     xCenter + (this.submatrix.length + 2) * _this.cfg.matrix.cellSize - _this.cfg.matrix.buttonSize / 2 - _this.cfg.matrix.cellSize + 4,
+     yCenter - _this.cfg.matrix.cellSize * 2 + _this.cfg.matrix.cellSize + 8);
+   this.context.restore();
 
     this.context.save();
     this.context.translate(transform.x, transform.y);

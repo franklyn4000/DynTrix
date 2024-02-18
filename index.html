@@ -24,16 +24,17 @@
         <option value="none">none</option>
         <optgroup label="Real-world data">
           <!-- <option value="charriere">Charriere</option>-->
-           <option value="dialog">Dialog</option>
-           <option value="mooc">MOOC</option>
-           <option value="rugby">Rugby</option>
-           <option value="vdBunt">van de Bunt</option>
-           <option value="infoVis">InfoVis</option>
-           <option value="vispub0">Vispub from 2010 (3109n, 12243e)</option>
-           <option value="vispub0b">Vispub from 2005 (4181n, 15823e)</option>
-           <option value="vispub1">Vispub reduced (5026n, 18179e)</option>
-           <option value="vispub2">Vispub (6610n, 23100e)</option>
-           <!--<option value="infoVisPersistNodes">InfoVis persist nodes</option>-->
+          <option value="dialog">Dialog</option>
+          <option value="mooc">MOOC</option>
+          <option value="rugby">Rugby</option>
+          <option value="vdBunt">van de Bunt</option>
+          <option value="infoVis">InfoVis 3y</option>
+          <option value="infoVis1">InfoVis 1y</option>
+          <option value="vispub0">Vispub from 2010 (3109n, 12243e)</option>
+          <option value="vispub0b">Vispub from 2005 (4181n, 15823e)</option>
+          <option value="vispub1">Vispub reduced (5026n, 18179e)</option>
+          <option value="vispub2">Vispub (6610n, 23100e)</option>
+          <!--<option value="infoVisPersistNodes">InfoVis persist nodes</option>-->
           <!--<option value="infoVisPersistNodesEdges">InfoVis persist nodes & edges</option>-->
           <option value="ramp">Ramp</option>
         </optgroup>
@@ -62,15 +63,22 @@
     </div>
     <div id="util" class="sidebarsection">
       <div class="utility-button-container">
-        <p class="label-like" >Tools</p>
+        <p class="label-like">Tools</p>
         <div id="toolbar" class="">
           <button id="deleteButton">Delete Matrices</button>
+          <div id='color-picker'>
+            <!-- Color boxes go here -->
+          </div>
+          <div id="color-picker-modal" class="color-picker-modal" style="display: none;">
+            <input id="color-input" type="color">
+          </div>
+          <button id="resetColorsButton">Reset Colors</button>
         </div>
       </div>
       <div class="utility-button-container">
-        <p class="label-like" >Hightlight changes</p>
+        <p class="label-like">Hightlight changes</p>
         <div class="util-container">
-          <p class="label-like" >Nodes</p>
+          <p class="label-like">Nodes</p>
           <div id="highlight" class="">
             <div>
               <input id="setNone" type="radio" name="highlight" checked>
@@ -86,7 +94,7 @@
               <label>Outgoing</label>
             </div>
           </div>
-          <p class="label-like" >Edges</p>
+          <p class="label-like">Edges</p>
           <div id="highlightedges" class="">
             <div>
               <input id="setNoneEdges" type="radio" name="highlightedges" checked>
@@ -137,27 +145,27 @@
       <button id="unselectButton">X</button>
     </div>
     <div id="vis" class="container">
-    <div id="vis" class="container">
+      <div id="vis" class="container">
 
-      <canvas id="hiddencanvas" style="display: none"></canvas>
-      <canvas id="canvas"></canvas>
-     <!-- <svg width="100%" viewBox="0 0 500 500"></svg> -->
-    </div>
-  <footer id="footer">
-    <div id="timeline-buttons-container">
-      <label for="prevBtn">Time line controls</label>
-      <div id="timeline-buttons">
-        <button name="firstBtn" id="firstBtn">first</button>
-        <button name="prevBtn" id="prevBtn">prev</button>
-        <button name="nextBtn" id="nextBtn">next</button>
-        <button name="lastBtn" id="lastBtn">last</button>
+        <canvas id="hiddencanvas" style="display: none"></canvas>
+        <canvas id="canvas"></canvas>
+        <!-- <svg width="100%" viewBox="0 0 500 500"></svg> -->
       </div>
-    </div>
+      <footer id="footer">
+        <div id="timeline-buttons-container">
+          <label for="prevBtn">Time line controls</label>
+          <div id="timeline-buttons">
+            <button name="firstBtn" id="firstBtn">first</button>
+            <button name="prevBtn" id="prevBtn">prev</button>
+            <button name="nextBtn" id="nextBtn">next</button>
+            <button name="lastBtn" id="lastBtn">last</button>
+          </div>
+        </div>
 
-    <div id="timeline-container">
-      <div id="timeline" style=""></div>
-    </div>
-  </footer>
+        <div id="timeline-container">
+          <div id="timeline" style=""></div>
+        </div>
+      </footer>
   </main>
 
 </div>

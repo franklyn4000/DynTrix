@@ -3,7 +3,8 @@
     "hoverColor": "rgba(200, 200, 0, 0.8)",
     "selectionColor": "rgba(220, 25, 25, 0.8)",
     "selectionColor2": "rgba(240, 105, 105, 0.8)",
-    "secondaryColor": "rgba(240, 25, 25, 1)"
+    "secondaryColor": "rgba(240, 25, 25, 1)",
+    "subtlerColor": "rgba(210, 95, 95, 1)"
   },
   "node": {
     "charge": -700,
@@ -36,6 +37,6 @@
     "margin": 32,
     "bridgeStroke": "#4a4a4a",
     "bridgeStrokeWidth": 1,
-    "buttonSize": 28
+    "buttonSize": 22
   }
 }

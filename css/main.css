@@ -540,11 +540,40 @@ footer {
   padding-top: .1rem;
   justify-content: left;
   align-items: center;
+  flex-direction: row;
+  display: flex;
 }
 
 #toolbar button{
   margin-right: 1rem;
   width: 7rem;
+}
+
+.color-box {
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+  border: solid 1px #555;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+.color-picker-modal {
+  background-color: #fff;
+  padding: 0;
+margin-left: 2rem;
+  z-index: 999;
+
+}
+
+#color-picker {
+  display: flex;
+  width: 110px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#colorpicker-container{
+  background-color: #43c64a;
 }
 
 #data-chooser-container {
@@ -554,7 +583,9 @@ footer {
   padding: .5rem 1rem;
 }
 
-
+#resetColorsButton {
+  margin-left: 1rem;
+}
 
 #data-chooser-container select {
   margin-left: 1rem;

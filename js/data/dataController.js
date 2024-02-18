@@ -55,6 +55,9 @@ class DataController {
       case 'infoVis':
         this.data = this.preProcessData(await parseInfoVis(false, false, 2010, 3));
         break;
+      case 'infoVis1':
+        this.data = this.preProcessData(await parseInfoVis(false, false, 2000, 1));
+        break;
       case 'vispub0':
         this.data = this.preProcessData(await parseVispub(["Vis", "InfoVis", "VAST"], 2010, 3));
         break;

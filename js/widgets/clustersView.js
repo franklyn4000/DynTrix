@@ -11,7 +11,10 @@ class ClustersView {
   clusterListIndices = new Map();
 
   constructor() {
+
+
   }
+
 
   setGraph(graph) {
     let _this = this;
