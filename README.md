@@ -3,6 +3,8 @@
 Prototype Application for the **EUROVIS 2024** paper
 **DynTrix: A Hybrid Representation for Dynamic Graphs**
 
+A live version is hosted on https://franklyn4000.github.io/DynTrix/
+
 ### Changelog
 
 #### Version 1.1

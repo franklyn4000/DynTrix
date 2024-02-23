@@ -109,7 +109,10 @@ class ClusteringController {
   setPaletteEntry(index, value) {
     this.palette[index] = value;
 
-    this.clusters[index].color = value;
+    if(this.clusters && this.clusters[index]) {
+      this.clusters[index].color = value;
+    }
+
     localStorage.setItem('palette', JSON.stringify(this.palette));
   }
 
